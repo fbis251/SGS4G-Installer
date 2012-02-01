@@ -1,0 +1,90 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+
+Name: res/images/progress_bar_empty_left_round.png
+SHA1-Digest: Q1RzNQgR9HWzHow4ei2uNXShLiw=
+
+Name: res/images/progress_bar_empty.png
+SHA1-Digest: +SHjWmkWIAdbvtxZPrW3agAB4Wo=
+
+Name: res/images/indeterminate3.png
+SHA1-Digest: ACOBWDBbQwrJgxFI+mUmI7Ku0Wg=
+
+Name: res/images/progress_bar_left_round.png
+SHA1-Digest: zQR4kA6GoB8RfBvLqGIXvq3A/F0=
+
+Name: sbin/sdparted
+SHA1-Digest: T9qW4ib89fqIKg0y2eOnI5hpJKo=
+
+Name: sbin/adbd
+SHA1-Digest: fuh1lkk7nJHGwZRMy+LTxdm58Ts=
+
+Name: res/images/indeterminate2.png
+SHA1-Digest: sY0UHCOQ7ZbiPwbQgVP6zENfIwY=
+
+Name: sbin/nandroid-md5.sh
+SHA1-Digest: SJ1shePrAneO58Ox3/Ip6BItPRk=
+
+Name: res/images/icon_firmware_install.png
+SHA1-Digest: 3BymyRpMClcg9TC0rIl8p2uPM3s=
+
+Name: META-INF/com/google/android/updater-script
+SHA1-Digest: 9Hz/y7gHgICmOPcSbpsFBkFf37Q=
+
+Name: sbin/recovery
+SHA1-Digest: nEcrvOATW1QZ4m4YfF8Ll5w34qc=
+
+Name: sbin/tune2fs
+SHA1-Digest: edg+siKuzi0JfGlmPsUT+1pu1Zc=
+
+Name: res/images/indeterminate1.png
+SHA1-Digest: MqxhtwTB6cTgmADfH/h+r4IVwlM=
+
+Name: res/images/progress_bar_fill.png
+SHA1-Digest: tQaa4aWsJRdbtgU2CEwFiNEcELE=
+
+Name: res/images/indeterminate6.png
+SHA1-Digest: pnQEI9QLIa3jEsnFyZsCcsRo4kM=
+
+Name: sbin/parted
+SHA1-Digest: S0e0XURYGoVYiwzs1fyXtXBEIR0=
+
+Name: sbin/postrecoveryboot.sh
+SHA1-Digest: t5XYB9C9DA+VDvQPq2mZsOdEKi0=
+
+Name: META-INF/com/google/android/update-binary
+SHA1-Digest: zAl901G3GgsFtoDBRtLY3jEg8j8=
+
+Name: res/images/progress_bar_right_round.png
+SHA1-Digest: dETYi+f2Xkd3GBUefac9EmpTOe4=
+
+Name: sbin/e2fsck
+SHA1-Digest: XbUTRH/wKzFs0KncFuVCk6ZVngo=
+
+Name: sbin/fix_permissions
+SHA1-Digest: TpuuJHJE6D9MbcIxxZbywcCPwXs=
+
+Name: res/images/indeterminate5.png
+SHA1-Digest: dbyYsKszIZaeGNiwT0SLUzzeAxk=
+
+Name: res/images/icon_firmware_error.png
+SHA1-Digest: LZWw/watFeQYtwfnq+GzWgdxHFM=
+
+Name: res/keys
+SHA1-Digest: 6jKMvjn5/6rbrAR9DkyK3rgrSkc=
+
+Name: res/images/icon_installing.png
+SHA1-Digest: 7celvc+76OitTtGzLBLh6Cbmcwc=
+
+Name: res/images/progress_bar_empty_right_round.png
+SHA1-Digest: sd9tlkE9KWhCMGuUc8LMxaYGqPU=
+
+Name: res/images/icon_error.png
+SHA1-Digest: g6TzjREZ6Z6Gb+RhBYSHz66uiJE=
+
+Name: sbin/killrecovery.sh
+SHA1-Digest: rOn+SfKbqomIqu77Z5lRdEe2cB0=
+
+Name: res/images/indeterminate4.png
+SHA1-Digest: jlgv/YIatVY3LAHUfyYTKtVFn3I=
+

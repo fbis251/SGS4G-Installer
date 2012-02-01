@@ -1,0 +1,3 @@
+/tmp/mkfs.ext4 -L /system -b 4096 -m 0 -F /dev/block/stl9
+/tmp/tune2fs -c 100 -i 30d -m 0 /dev/block/stl9
+/sbin/mount -t ext4 /dev/block/stl9 /system
