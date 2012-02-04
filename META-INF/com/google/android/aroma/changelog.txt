@@ -1,36 +1,11 @@
-<#800>RC 3.4</#>
-DSP - Fixed and given a new graphic (EQ and all functions now work as intended and can be enabled properly also EQ will now show the settings that were set :P)
-Removed a few more Samsung related files that were no longer needed and eating up space :P
-Calender should now be 98 percent graphic glitch free (need to fix two files to make it 100 percent)
-4tab AOSP lock screen now has a image in the 3rd tab :P
-Fixed issue with installer script should now mount system properly :P
-Changed a some of the theme up :P
-Cm7 Music player is now in place of MIUI Music tell I can track down version 3 that has EQ/DSP support so it can be used in the music player :P Feel free to visit themes section if you miss it that much :P
-Added back WiFi Calling into the rom...
-Removed My files in place of cm7 file manager (be warned you can seriously wreck your device as you have full root access!!!! Don't delete random shit like your EFS or .ls folders)
+<#800>Version 1.1 RC1</#>
+Fixed a single typo.
+  I before E except after C.
 
-<#800>RC 3.3-Fixed</#>
-Music will now play without crashing the music player (applies to any music player you installed)
-Twitter and Facebook contacts should now sync properly
-WiFi Calling Fixed will need to be re downloaded form market
-Search key now properly uses Google search.
-GPS should now function as intended and all apps requiring GPS should not force close anymore.
-First time use of market will take you to PUB:GOOGLE to re download Google apps that have been removed :P
-Calendar corrected and should look as intended now :P
-All Samsung DRM has been removed expunged done ( removed last remaining DRM) :P....
-I know I'm missing something I'm tired :P
+<#800>Version 1.1</#>
+Made ROM even more awesome by adding flame decals!
+Adding a racing stripe down the middle.
+Added an orange pearlescent paint job to make the ROM look even more epic!.
 
-<#800>RC 3.2</#>
-Fixed Bt issue's Should work out the box
-Fixed Build prop issues and cleaned up some redundant INFO
-Removed Dev Tools
-Migrated to Adw Cm7 Version (fully working)
-Remove the rest of samsung drm :P
-Tmoble backup removed
-Phone setup is now optional You will notice this on bootup welcome to message :P
-Removed pretty much all the rest of the bloat (86mb rom size installed) 130mb memory usage :P
-Cleaned out Useless permission's
-Other MIsc Bugfixes
-Removed linda sorry that ho was pretty much used up :P
-Cm7 wallpapers and tons are now in the rom
-No sound or ring tones once installed actually need to set it in your sounds and setting disabled by default :P
+<#800>Version 1.0</#>
+Initial release

@@ -1,16 +1,16 @@
 ##
 # ROM Information
 #
-setvar("rom_name",             "Valhalla Black Edition - CM7 Hybrid");
-setvar("rom_version",          "RC3.4");
-setvar("rom_author",           "RaverX3X");
+setvar("rom_name",             "Rom Name");
+setvar("rom_version",          "Rom Version");
+setvar("rom_author",           "Rom Author");
 setvar("rom_device",           "Samsung Galaxy S 4G");
-setvar("rom_date",             "Feb 4, 2012");
+setvar("rom_date",             "Jan 1, 1970");
 
 ##
 # Files
 #
-setvar("file_splash_img",       "fb256");
+setvar("file_splash_img",      "sample");
 setvar("file_agreement",       readfile_aroma("agreement.txt"));
 setvar("file_changelog",       readfile_aroma("changelog.txt"));
 
@@ -26,19 +26,6 @@ ini_set("rom_name",             getvar("rom_name"));
 ini_set("rom_version",          getvar("rom_version"));
 ini_set("rom_author",           getvar("rom_author"));
 ini_set("rom_device",           getvar("rom_device"));
-
-##
-# Calibrate Touchscreen
-#  defaut: HTC Desire Touch Screen Calibrate Data 8,-20,8,-20
-#
-# For other device, run the installer, then press "menu"
-# and select Calibrating Tools. Follow Instructions, and make
-# sure the touch screen has been valid in the testing step.
-#
-# In the end, there will be alert dialog with calibration data
-# ( green ), replace this calibrate() function with that data.
-#
- calibrate("8","-20","8","-20");
 
 ##
 # Set UI Color
@@ -58,7 +45,6 @@ ini_set("rom_device",           getvar("rom_device"));
 #   navbg       : Bottom Bar (Navigation Bar) Background. Next-Previous Area
 #   border      : Common Border Color
 #
-#--- If not sets, It will use default colors ( Sense Like )
 #
 # Supported 3 & 6 Char Hex Colors:
 #   #fff or #ffffff
@@ -83,10 +69,6 @@ setcolor("navbg_g",     "#222");
 setcolor("border",      "#666");
 setcolor("border_g",    "#444");
 
-##
-# Show Splash for 4 seconds ( 1000 = 1 sec )
-#   "sample" will read <aroma-assets>/"sample".png
-#
 splash(4000, getvar("file_splash_img"));
 
 viewbox(
