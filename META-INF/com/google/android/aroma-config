@@ -1,9 +1,4 @@
 ##
-# Touchscreen Calibration Values
-#
-calibrate("0.8725","41","0.9468","27");
-
-##
 # ROM Information
 #
 setvar("rom_name",             "Rom Name");
@@ -31,6 +26,20 @@ ini_set("rom_name",             getvar("rom_name"));
 ini_set("rom_version",          getvar("rom_version"));
 ini_set("rom_author",           getvar("rom_author"));
 ini_set("rom_device",           getvar("rom_device"));
+
+##
+# Calibrate Touchscreen
+#  defaut: HTC Desire Touch Screen Calibrate Data 8,-20,8,-20
+#
+# For other device, run the installer, then press "menu"
+# and select Calibrating Tools. Follow Instructions, and make
+# sure the touch screen has been valid in the testing step.
+#
+# In the end, there will be alert dialog with calibration data
+# ( green ), replace this calibrate() function with that data.
+#
+# These are the defaults for the SGS4G
+calibrate("0.8809","26","0.9507","19");
 
 ##
 # Set UI Color
