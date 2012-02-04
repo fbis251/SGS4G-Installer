@@ -1,0 +1,8 @@
+Figure out if functions can be used for installation options.
+Warn the user if they're about to wipe partitions
+Check if we're currently on Froyo. If we are abort installation and inform the user that GB bootloaders are needed.
+	ro.build.id=GINGERBREAD
+We need a team acid logo.
+Add a popup asking if the user wants to reboot
+Figure out what would be the best percentage increments
+Add an option to wipe dalvik cache
