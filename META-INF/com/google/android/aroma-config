@@ -1,0 +1,244 @@
+##
+# ROM Information
+#
+setvar("rom_name",             "Valhalla Black Edition - CM7 Hybrid");
+setvar("rom_version",          "RC3.4");
+setvar("rom_author",           "RaverX3X");
+setvar("rom_device",           "Samsung Galaxy S 4G");
+setvar("rom_date",             "Feb 4, 2012");
+
+##
+# Files
+#
+setvar("file_splash_img",       "fb256");
+setvar("file_agreement",       readfile_aroma("agreement.txt"));
+setvar("file_changelog",       readfile_aroma("changelog.txt"));
+
+###############################################################
+# Configuration complete.                                     #
+#                                                             #
+# Please do not edit any of the options below unless          #
+# you know what you're doing!                                 #
+###############################################################
+
+# Set up variables
+ini_set("rom_name",             getvar("rom_name"));
+ini_set("rom_version",          getvar("rom_version"));
+ini_set("rom_author",           getvar("rom_author"));
+ini_set("rom_device",           getvar("rom_device"));
+
+##
+# Calibrate Touchscreen
+#  defaut: HTC Desire Touch Screen Calibrate Data 8,-20,8,-20
+#
+# For other device, run the installer, then press "menu"
+# and select Calibrating Tools. Follow Instructions, and make
+# sure the touch screen has been valid in the testing step.
+#
+# In the end, there will be alert dialog with calibration data
+# ( green ), replace this calibrate() function with that data.
+#
+ calibrate("8","-20","8","-20");
+
+##
+# Set UI Color
+# foo   = Main Color ( If Gradient, it was Top Color )
+# foo_g = Main Color Gradient ( Bottom Color )
+#
+#   winbg       : Main/Top Most Window Backgroud
+#   textbg      : Textbox, Checkbox, and any scrollable UI Background
+#   textfg      : Textbox, Checkbox, and any scrollable UI Text Foreground
+#   textfg_gray : Gray Text ( on Optionbox/Checkbox Item Description )
+#   controlbg   : Control / Button / Checkbox border - Background Color
+#   controlfg   : Button Text Color
+#   selectbg    : Selected Element Background ( Pushed/focused Button/items, etc )
+#   selectfg    : Selected Element Text/Foreground Color
+#   titlebg     : Window Title Background
+#   titlefg     : Window Title Text Foreground Color
+#   navbg       : Bottom Bar (Navigation Bar) Background. Next-Previous Area
+#   border      : Common Border Color
+#
+#--- If not sets, It will use default colors ( Sense Like )
+#
+# Supported 3 & 6 Char Hex Colors:
+#   #fff or #ffffff
+#   #469 or #46689a
+#
+setcolor("winbg",       "#444");
+setcolor("winbg_g",     "#000");
+setcolor("textbg",      "#333");
+setcolor("textfg",      "#fff");
+setcolor("textfg_gray", "#bbb");
+setcolor("controlbg",   "#444");
+setcolor("controlbg_g", "#000");
+setcolor("controlfg",   "#fff");
+setcolor("selectbg",    "#653");
+setcolor("selectbg_g",  "#542");
+setcolor("selectfg",    "#ffd");
+setcolor("titlebg",     "#333");
+setcolor("titlebg_g",   "#000");
+setcolor("titlefg",     "#fff");
+setcolor("navbg",       "#333");
+setcolor("navbg_g",     "#222");
+setcolor("border",      "#666");
+setcolor("border_g",    "#444");
+
+##
+# Show Splash for 4 seconds ( 1000 = 1 sec )
+#   "sample" will read <aroma-assets>/"sample".png
+#
+splash(4000, getvar("file_splash_img"));
+
+viewbox(
+  # Arg 1
+    "Welcome",
+  
+  # Arg 2
+    "You are about to install:\n" +
+    "<#080>"+getvar("rom_name") + "</#>\n\n"+
+    "Designed for:\n" +
+    "<#080>"+getvar("rom_device") + "</#>\n\n"+
+    "Version :\n"+
+    "<#080>"+getvar("rom_version")+"</#>\n\n"+
+    "Updated :\n"+
+    "<#080>"+getvar("rom_date")+"</#>\n\n\n"+
+    "Select Next to continue."+
+    "",
+  
+  # Arg 3
+    "icons/info"
+);
+
+agreebox(
+  # Arg 1
+    "Terms Of Use",
+  
+  # Arg 2
+    "Please read the Terms of Use below.",
+  
+  # Arg 3
+    "icons/agreement",
+  
+  # Arg 4
+    ## Read From File: Will read <aroma-assets>/sample.txt
+    getvar("file_agreement"),
+  
+  # 5
+    "I agree to the Terms of Use.",
+  
+  # 6
+    "Please agree to the Terms of Use to continue with the installation."
+);
+
+textbox(
+  # Arg 1
+    "Changelog",
+  
+  # Arg 2
+  getvar("rom_name"),
+  
+  # Arg 3
+    "icons/info",
+  
+  # Arg 4
+    getvar("file_changelog");
+);
+
+# TODO: Enable typical install settings.
+##
+# Show Menubox
+#
+menubox(
+  # Title
+    "Install Type",
+  
+  # Sub Title
+    "Choose a typical or customized installation.",
+  
+  # Icon
+    "icons/install",
+    
+  # Will be saved in /tmp/aroma-data/install_type.prop
+    "install_type.prop",
+    
+  # Items ( per 3 arguments ): Title, Subtitle/description, Icon
+    # Item 1
+    "Typical",    "Install default recommended packages into your phone.", "icons/install",
+    
+    # Item 2
+    "Customize",  "Install only selected packages into your phone.", "icons/apps"
+);
+
+if
+  # User chose customized installation
+  file_getprop("/tmp/aroma-data/install_type.prop","selected") == "2"
+then
+  checkbox(
+    # Title
+      "Select Installation Options",
+    
+    # Sub Title
+      "Please select installation options below:",
+    
+    # Icon
+      "icons/apps",
+    
+    # Will be saved in /tmp/aroma-data/mods.prop
+      "options.prop",
+    
+    # Items ( per 3 arguments ): Title, Subtitle/description, Item Type
+    #   Item Type:
+    #   0 = Unchecked by default
+    #   1 = Checked by default
+    #   2 = Item Group Title ( the subtitle won't be used )
+    #
+      # Group 1
+      "ROM Options","",2,
+        
+        # Item 1.1
+        "Wipe /system.",
+          "Deletes all files from this partition. Recommended if you're coming from another ROM.", 0,
+        
+        # Item 1.2
+        "Wipe /data.",
+          "Deletes all files from this partition. Recommended if you're coming from another ROM. Don't select if you want to keep your apps and customizations.", 0,
+        
+        # TODO enable this through file in sdcard
+        # enable lagfix
+        #"Enable lagfix on reboot.",
+        #  "Recommended if you want a speed boost.", 0,
+      
+      # Group 2
+      "Modem and Kernel","",2,
+        # Item 2.1
+        "Install Modem",
+          "Samsung Galaxy S 4G KJ6 Modem.", 1,
+        
+        # Item 2.2
+        "Install Kernel",
+          "bhundven's SMS-KJ6 Kernel.",1,
+        
+      # Group 3
+      "Other customizations","",2,
+        # Item 3.1
+        "Install busybox",
+          "(Recommended) Used by many command-line programs.", 1
+  );
+endif;
+
+install(
+  "Installing",
+  getvar("rom_name")+"\n"+
+  "Please wait until the install completes.",
+  "icons/install"
+);
+
+ini_set("text_next", "Finish");
+
+viewbox(
+  "Installation Completed",
+    "<#080>Congratulations!</#>\n\n"+
+    getvar("rom_name")+ " has successfully installed.\n"+
+    "Select Finish to exit the installation.",
+  "icons/info"
+);

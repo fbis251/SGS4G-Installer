@@ -1,3 +1,0 @@
-/tmp/mkfs.ext4 -L /cache -b 4096 -m 0 -F /dev/block/stl11
-/tmp/tune2fs -c 100 -i 30d -m 0 /dev/block/stl11
-/sbin/mount -t ext4 /dev/block/stl11 /cache

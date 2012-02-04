@@ -1,72 +1,38 @@
-ui_print("Performing Update");
+ui_print("@ Mounting partitions");
+show_progress(0.0, 0);
+run_program("/sbin/mount", "/dev/block/stl9 /system");
+run_program("/sbin/mount", "/dev/block/stl10 /data");
+run_program("/sbin/mount", "/dev/block/stl11 /cache");
 
-ui_print("Formatting partitions");
-ui_print("EXT4 Formatter by Dameon87");
-ui_print("==========================");
-ui_print("Starting operation");
-show_progress(0, 0);
+# For all the option-checking conditionals,
+# install_type 1 = "typical" installation
+# install_type 2 = "customized" installation
+# if customized, check if the option for this action was selected
+if
+  (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
+  file_getprop("/tmp/aroma-data/options.prop","item.1.1") == "1")
+then
+  ui_print("@ Wiping /system");
+  delete_recursive("/system");
+  set_progress(0.1);
+endif;
 
-ui_print("Copying kernel modules");
-package_extract_file("kernel/modules/jbd2.ko", "/tmp/jbd2.ko");
-set_perm(0, 0, 0755, "/tmp/jbd2.ko");
-package_extract_file("kernel/modules/ext4.ko", "/tmp/ext4.ko");
-set_perm(0, 0, 0755, "/tmp/ext4.ko");
+if
+ (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
+ file_getprop("/tmp/aroma-data/options.prop","item.1.2") == "1")
+then
+  ui_print("@ Wiping /data");
+  delete_recursive("/data");
+  set_progress(0.2);
+endif;
 
-ui_print("Loading kernel modules");
-run_program("/sbin/insmod", "/tmp/jbd2.ko");
-run_program("/sbin/insmod", "/tmp/ext4.ko");
+# We are wiping /cache by default.
+  ui_print("@ Wiping /cache");
+delete_recursive("/cache");
+set_progress(0.3);
 
-ui_print("Copying files required to format");
-package_extract_file("tools/fsck.ext4", "/tmp/fsck.ext4");
-package_extract_file("tools/tune2fs", "/tmp/tune2fs");
-package_extract_file("tools/mkfs.ext4", "/tmp/mkfs.ext4");
-package_extract_file("tools/mke2fs.conf", "/etc/mke2fs.conf");
-package_extract_file("tools/formatsystem", "/tmp/formatsystem");
-package_extract_file("tools/formatdata", "/tmp/formatdata");
-package_extract_file("tools/formatcache", "/tmp/formatcache");
-set_perm(0, 0, 0755, "/tmp/mkfs.ext4");
-set_perm(0, 0, 0755, "/tmp/fsck.ext4");
-set_perm(0, 0, 0755, "/tmp/tune2fs");
-set_perm(0, 0, 0755, "/etc/mke2fs.conf");
-set_perm(0, 0, 0755, "/tmp/formatsystem");
-set_perm(0, 0, 0755, "/tmp/formatdata");
-set_perm(0, 0, 0755, "/tmp/formatcache");
-show_progress(0.1, 0);
-
-ui_print("Formatting stl9 - system");
-ui_print("This may take a while");
-unmount("/system");
-run_program("/tmp/mkfs.ext4", "-L", "/system", "-b", "4096", "-m", "0", "-F", "/dev/block/stl9");
-ui_print("Tuning filesystem");
-run_program("/tmp/tune2fs", "-c", "100", "-i", "30d", "-m", "0", "/dev/block/stl9");
-ui_print("Mounting /system as ext4");
-run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl9 /system");
-ui_print("Formatting system complete!");
-show_progress(0.2, 0);
-
-ui_print("Formatting stl10 - data");
-ui_print("This may take a while");
-unmount("/data");
-run_program("/tmp/mkfs.ext4", "-L", "/data", "-b", "4096", "-m", "0", "-F", "/dev/block/stl10");
-ui_print("Tuning filesystem");
-run_program("/tmp/tune2fs", "-c", "100", "-i", "30d", "-m", "0", "/dev/block/stl10");
-ui_print("Mounting /data as ext4");
-run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl10 /data");
-ui_print("Formatting data complete!");
-show_progress(0.3, 0);
-
-ui_print("Formatting stl11 - cache");
-ui_print("This may take a while");
-unmount("/cache");
-run_program("/tmp/mkfs.ext4", "-L", "/cache", "-b", "4096", "-m", "0", "-F", "/dev/block/stl11");
-ui_print("Tuning filesystem");
-run_program("/tmp/tune2fs", "-c", "100", "-i", "30d", "-m", "0", "/dev/block/stl11");
-ui_print("Mounting /system as ext4..");
-run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl11 /cache");
-ui_print("Formatting cache complete!");
-ui_print("Formatting operation complete!");
-show_progress(0.4, 0);
-
+ui_print("@ Extracting Files");
+show_progress(0.2, 716);
 ui_print("Extracting /system");
 package_extract_dir("system", "/system");
 ui_print("Extracting /data");
@@ -75,66 +41,23 @@ ui_print("Extracting /sdard");
 package_extract_dir("sdcard", "/sdcard");
 ui_print("Extracting updates");
 package_extract_dir("updates", "/tmp/updates");
-show_progress(0.5, 0);
+set_progress(0.5);
 
-ui_print("Setting up toolbox");
-symlink("toolbox", "/system/bin/cat");
-symlink("toolbox", "/system/bin/chmod");
-symlink("toolbox", "/system/bin/chown");
-symlink("toolbox", "/system/bin/cmp");
-symlink("toolbox", "/system/bin/date");
-symlink("toolbox", "/system/bin/dd");
-symlink("toolbox", "/system/bin/df");
-symlink("toolbox", "/system/bin/dmesg");
-symlink("toolbox", "/system/bin/getevent");
-symlink("toolbox", "/system/bin/getprop");
-symlink("toolbox", "/system/bin/hd");
-symlink("toolbox", "/system/bin/id");
-symlink("toolbox", "/system/bin/ifconfig");
-symlink("toolbox", "/system/bin/iftop");
-symlink("toolbox", "/system/bin/insmod");
-symlink("toolbox", "/system/bin/ioctl");
-symlink("toolbox", "/system/bin/ionice");
-symlink("toolbox", "/system/bin/kill");
-symlink("toolbox", "/system/bin/ln");
-symlink("toolbox", "/system/bin/log");
-symlink("toolbox", "/system/bin/ls");
-symlink("toolbox", "/system/bin/lsmod");
-symlink("toolbox", "/system/bin/mkdir");
-symlink("toolbox", "/system/bin/mount");
-symlink("toolbox", "/system/bin/mv");
-symlink("toolbox", "/system/bin/nandread");
-symlink("toolbox", "/system/bin/netstat");
-symlink("toolbox", "/system/bin/newfs_msdos");
-symlink("toolbox", "/system/bin/notify");
-symlink("toolbox", "/system/bin/printenv");
-symlink("toolbox", "/system/bin/ps");
-symlink("toolbox", "/system/bin/reboot");
-symlink("toolbox", "/system/bin/renice");
-symlink("toolbox", "/system/bin/rm");
-symlink("toolbox", "/system/bin/rmdir");
-symlink("toolbox", "/system/bin/rmmod");
-symlink("toolbox", "/system/bin/route");
-symlink("toolbox", "/system/bin/schedtop");
-symlink("toolbox", "/system/bin/sendevent");
-symlink("toolbox", "/system/bin/setconsole");
-symlink("toolbox", "/system/bin/setprop");
-symlink("toolbox", "/system/bin/sleep");
-symlink("toolbox", "/system/bin/smd");
-symlink("toolbox", "/system/bin/start");
-symlink("toolbox", "/system/bin/stop");
-symlink("toolbox", "/system/bin/sync");
-symlink("toolbox", "/system/bin/top");
-symlink("toolbox", "/system/bin/umount");
-symlink("toolbox", "/system/bin/vmstat");
-symlink("toolbox", "/system/bin/watchprops");
-symlink("toolbox", "/system/bin/wipe");
-symlink("dumpstate", "/system/bin/dumpmesg");
+ui_print("@ Setting up toolbox");
+symlink("dumpstate","/system/bin/dumpcrash");
 symlink("debuggerd", "/system/bin/csview");
-symlink("/system/xbin/su", "/system/bin/su");
-show_progress(0.6, 0);
+symlink("toolbox","/system/bin/cat","/system/bin/chmod","/system/bin/chown","/system/bin/cmp","/system/bin/date","/system/bin/dd",
+        "/system/bin/df","/system/bin/dmesg","/system/bin/getevent","/system/bin/getprop","/system/bin/hd","/system/bin/id",
+        "/system/bin/ifconfig","/system/bin/iftop","/system/bin/insmod","/system/bin/ioctl","/system/bin/ionice","/system/bin/kill",
+        "/system/bin/ln","/system/bin/log","/system/bin/ls","/system/bin/lsmod","/system/bin/mkdir","/system/bin/mount",
+        "/system/bin/mv","/system/bin/nandread","/system/bin/netstat","/system/bin/newfs_msdos","/system/bin/notify",
+        "/system/bin/printenv", "/system/bin/ps","/system/bin/reboot","/system/bin/renice","/system/bin/rm","/system/bin/rmdir",
+        "/system/bin/rmmod","/system/bin/route","/system/bin/schedtop","/system/bin/sendevent","/system/bin/setconsole",
+        "/system/bin/setprop","/system/bin/sleep","/system/bin/smd","/system/bin/start","/system/bin/stop","/system/bin/sync",
+        "/system/bin/top","/system/bin/umount","/system/bin/vmstat","/system/bin/watchprops","/system/bin/wipe");
+set_progress(0.6);
 
-ui_print("Setting permissions");
+ui_print("@ Setting permissions");
 set_perm_recursive(0, 0, 0755, 0644, "system");
 set_perm_recursive(0, 2000, 0755, 0755, "system/bin");
 set_perm_recursive(0, 0, 0755, 0755, "system/etc");
@@ -150,21 +73,40 @@ set_perm(0, 2000, 0550, "/system/etc/init.goldfish.sh");
 set_perm(0, 0, 04755, "/system/xbin/su");
 set_perm(0, 0, 04755, "/system/xbin/busybox");
 set_perm(0, 0, 755, "/tmp/updates/redbend_ua");
-show_progress(0.7, 0);
+set_progress(0.7);
 
-ui_print("Installing busybox");
-run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
-show_progress(0.8, 0);
+if
+ (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
+ file_getprop("/tmp/aroma-data/options.prop","item.2.1") == "1")
+then
+  ui_print("@ Flashing modem");
+  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", "/dev/block/bml12");
+  set_progress(0.9);
+endif;
 
-ui_print("Flashing modem");
-run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", "/dev/block/bml12");
-show_progress(0.9, 0);
-ui_print("Flashing kernel");
-run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
-show_progress(1.0, 0);
+if
+ (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
+ file_getprop("/tmp/aroma-data/options.prop","item.2.2") == "1")
+then
+  ui_print("@ Flashing kernel");
+  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
+  set_progress(0.95);
+endif;
 
-ui_print("Unmounting mount points");
+if
+ (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
+ file_getprop("/tmp/aroma-data/options.prop","item.3.1") == "1")
+then
+  ui_print("@ Installing busybox");
+  run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
+  set_progress(0.8);
+endif;
+
+ui_print("@ Unmounting mount points");
 run_program("/sbin/umount", "/system");
 run_program("/sbin/umount", "/data");
 run_program("/sbin/umount", "/cache");
-ui_print("Update complete");
+set_progress(1.0);
+show_progress(1.0, 0);
+
+ui_print("@ Update complete");
