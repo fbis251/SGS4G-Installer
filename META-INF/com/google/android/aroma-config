@@ -1,4 +1,9 @@
 ##
+# Touchscreen Calibration Values
+#
+calibrate("0.8725","41","0.9468","27");
+
+##
 # ROM Information
 #
 setvar("rom_name",             "Rom Name");
@@ -10,7 +15,7 @@ setvar("rom_date",             "Jan 1, 1970");
 ##
 # Files
 #
-setvar("file_splash_img",      "sample");
+setvar("file_splash_img",      "splash");
 setvar("file_agreement",       readfile_aroma("agreement.txt"));
 setvar("file_changelog",       readfile_aroma("changelog.txt"));
 
