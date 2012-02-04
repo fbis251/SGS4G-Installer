@@ -46,6 +46,7 @@ set_progress(0.5);
 ui_print("@ Setting up toolbox");
 symlink("dumpstate","/system/bin/dumpcrash");
 symlink("debuggerd", "/system/bin/csview");
+symlink("/system/xbin/su", "/system/bin/su");
 symlink("toolbox","/system/bin/cat","/system/bin/chmod","/system/bin/chown","/system/bin/cmp","/system/bin/date","/system/bin/dd",
         "/system/bin/df","/system/bin/dmesg","/system/bin/getevent","/system/bin/getprop","/system/bin/hd","/system/bin/id",
         "/system/bin/ifconfig","/system/bin/iftop","/system/bin/insmod","/system/bin/ioctl","/system/bin/ionice","/system/bin/kill",
