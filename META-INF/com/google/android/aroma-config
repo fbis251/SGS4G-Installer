@@ -6,7 +6,7 @@ setvar("rom_version",          "Rom Version");
 setvar("rom_author",           "Rom Author");
 setvar("rom_device",           "Samsung Galaxy S 4G");
 setvar("rom_date",             "Jan 1, 1970");
-setvar("rom_installer",        "Rom Installer Editor");
+setvar("rom_packager",        "Rom Installer Editor");
 
 ##
 # Files
@@ -102,7 +102,7 @@ viewbox(
     "Updated:\n"+
     "<#080>"+getvar("rom_date")+"</#>\n\n"+
     "Installer By:\n"+
-    "<#080>"+getvar("rom_installer")+"</#>\n\n\n"+
+    "<#080>"+getvar("rom_packager")+"</#>\n\n\n"+
     "Select Next to continue."+
     "",
   
