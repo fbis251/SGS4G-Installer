@@ -1,15 +1,4 @@
-<#446699>SAMPLE TEXT FILE</#>
-
-This text readed from text file located in META-INF/com/android/aroma/agreement.txt
-
-The text in AROMA Installer currently supported 2 formats, <u>Underline</u>, and <#090>Custom Color</#>.
-
-To make the text underlined, use \<u>The Text to be underlined\</u> just like HTML.
-
-For custom color, use \<#HEXCOLOR>Text tobe colored\</#>, where the HEXCOLOR was standard HTML/CSS color definition in RGB Hexadecimal color code, it can be 3 or 6 character length (RGB or RRGGBB), example <#000099>#000099 for dark blue</#>, <#008800>#008800 for dark green</#>, <#880000>#880000 for dark red</#>, or with only 3 char mode: <#009>#009 for dark blue</#>.
-
-The AROMA Installer
-(c) 2011 by amarullz - xda-developers.
+By installing this ROM, you agree that you will not hold anyone other than yourself responsible for any damage you may cause to your device or other property. You also agree to the terms of the Apache License below.
 
 ----
 
