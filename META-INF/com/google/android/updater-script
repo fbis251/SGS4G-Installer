@@ -9,30 +9,52 @@ run_program("/sbin/mount", "/dev/block/stl11 /cache");
 # install_type 2 = "customized" installation
 # if customized, check if the option for this action was selected
 if
-  (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
-  file_getprop("/tmp/aroma-data/options.prop","item.1.1") == "1")
+ (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
+ file_getprop("/tmp/aroma-data/options.prop","item.1.1") == "1")
 then
-  ui_print("@ Wiping /system");
-  delete_recursive("/system");
+  ui_print("@ Wiping Dalvik cache");
+  delete_recursive("/data/dalvik-cache");
   set_progress(0.1);
 endif;
 
 if
+  (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
+  file_getprop("/tmp/aroma-data/options.prop","item.1.2") == "1")
+then
+  ui_print("@ Wiping /system");
+  delete_recursive("/system");
+  set_progress(0.15);
+endif;
+
+if
  (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" || 
- file_getprop("/tmp/aroma-data/options.prop","item.1.2") == "1")
+ file_getprop("/tmp/aroma-data/data_wipe.prop","wipe") == "1")
+ # The user had to confirm that they did want the data wipe.
 then
   ui_print("@ Wiping /data");
   delete_recursive("/data");
   set_progress(0.2);
 endif;
 
-# We are wiping /cache by default.
+if
+ (file_getprop("/tmp/aroma-data/install_type.prop","selected") == "1" ||
+ file_getprop("/tmp/aroma-data/options.prop","item.1.4") == "1")
+then
   ui_print("@ Wiping /cache");
-delete_recursive("/cache");
-set_progress(0.3);
+  delete_recursive("/cache");
+  set_progress(0.3);
+endif;
+
+
+# We are wiping /cache by default.
+  
 
 ui_print("@ Extracting Files");
-show_progress(0.2, 716);
+# show progress takes two arguments
+# how much to increment the progress
+# and how many files are gonna get transferred.
+# 700 is a good default for files transferred on a Gingerbread ROM.
+show_progress(0.2, 700);
 ui_print("Extracting /system");
 package_extract_dir("system", "/system");
 ui_print("Extracting /data");
@@ -111,3 +133,10 @@ set_progress(1.0);
 show_progress(1.0, 0);
 
 ui_print("@ Update complete");
+
+if
+ (file_getprop("/tmp/aroma-data/options.prop","item.4.1") == "1")
+then
+  ui_print("@ Rebooting phone");
+  run_program("/sbin/reboot");
+endif;

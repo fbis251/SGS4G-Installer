@@ -1,12 +1,17 @@
 ##
 # ROM Information
 #
-setvar("rom_name",             "Rom Name");
-setvar("rom_version",          "Rom Version");
-setvar("rom_author",           "Rom Author");
-setvar("rom_device",           "Samsung Galaxy S 4G");
-setvar("rom_date",             "Jan 1, 1970");
-setvar("rom_packager",        "Rom Installer Editor");
+
+# Load ROM information into tmp directory
+writetmpfile("rom.prop",readfile_aroma("rom.prop"));
+
+# Configure the variables
+setvar("rom_name",file_getprop(readfile_aroma("rom.prop"),"rom_name"));
+setvar("rom_version",file_getprop("/tmp/aroma-data/rom.prop","rom_version"));
+setvar("rom_author",file_getprop("/tmp/aroma-data/rom.prop","rom_author"));
+setvar("rom_device",file_getprop("/tmp/aroma-data/rom.prop","rom_device"));
+setvar("rom_date",file_getprop("/tmp/aroma-data/rom.prop","rom_date"));
+setvar("rom_packager",file_getprop("/tmp/aroma-data/rom.prop","rom_packager"));
 
 ##
 # Files
@@ -65,24 +70,24 @@ calibrate("0.8809","26","0.9507","19");
 #   #fff or #ffffff
 #   #469 or #46689a
 #
-setcolor("winbg",       "#444");
-setcolor("winbg_g",     "#000");
-setcolor("textbg",      "#333");
-setcolor("textfg",      "#fff");
-setcolor("textfg_gray", "#bbb");
-setcolor("controlbg",   "#444");
-setcolor("controlbg_g", "#000");
-setcolor("controlfg",   "#fff");
-setcolor("selectbg",    "#653");
-setcolor("selectbg_g",  "#542");
-setcolor("selectfg",    "#ffd");
-setcolor("titlebg",     "#333");
-setcolor("titlebg_g",   "#000");
-setcolor("titlefg",     "#fff");
-setcolor("navbg",       "#333");
-setcolor("navbg_g",     "#222");
-setcolor("border",      "#666");
-setcolor("border_g",    "#444");
+# setcolor("winbg",       "#444");
+# setcolor("winbg_g",     "#000");
+# setcolor("textbg",      "#333");
+# setcolor("textfg",      "#fff");
+# setcolor("textfg_gray", "#bbb");
+# setcolor("controlbg",   "#444");
+# setcolor("controlbg_g", "#000");
+# setcolor("controlfg",   "#fff");
+# setcolor("selectbg",    "#653");
+# setcolor("selectbg_g",  "#542");
+# setcolor("selectfg",    "#ffd");
+# setcolor("titlebg",     "#333");
+# setcolor("titlebg_g",   "#000");
+# setcolor("titlefg",     "#fff");
+# setcolor("navbg",       "#333");
+# setcolor("navbg_g",     "#222");
+# setcolor("border",      "#666");
+# setcolor("border_g",    "#444");
 
 splash(4000, getvar("file_splash_img"));
 
@@ -110,6 +115,31 @@ viewbox(
     "icons/info"
 );
 
+if
+  # This is where we check if the user is on a version we don't want.
+  # If this is a Gingerbread ROM, the user has Froyo bootloaders so our ROM
+  # won't work correctly.
+  file_getprop("/system/build.prop","ro.build.id") == "FROYO"
+then
+  alert(
+    # Arg 1
+      "You are not on Gingerbread!",
+    
+    # Arg 2
+      "This ROM will only work if you are running Gingerbread.\n" +
+      "You are currently running Froyo.\n" +
+      "Please find instructions on how to install this rom.\n"+
+      "Thank you.",
+    
+    # Arg 3
+      "icons/alert",
+    
+    # Arg 4
+      "Exit Installation"
+  );
+  exit();
+endif;
+
 agreebox(
   # Arg 1
     "Terms Of Use",
@@ -121,7 +151,6 @@ agreebox(
     "icons/agreement",
   
   # Arg 4
-    ## Read From File: Will read <aroma-assets>/sample.txt
     getvar("file_agreement"),
   
   # 5
@@ -145,10 +174,6 @@ textbox(
     getvar("file_changelog");
 );
 
-# TODO: Enable typical install settings.
-##
-# Show Menubox
-#
 menubox(
   # Title
     "Install Type",
@@ -159,7 +184,7 @@ menubox(
   # Icon
     "icons/install",
     
-  # Will be saved in /tmp/aroma-data/install_type.prop
+  # Will be saved in /tmp/aroma-data/<file>
     "install_type.prop",
     
   # Items ( per 3 arguments ): Title, Subtitle/description, Icon
@@ -184,7 +209,7 @@ then
     # Icon
       "icons/apps",
     
-    # Will be saved in /tmp/aroma-data/mods.prop
+    # Will be saved in /tmp/aroma-data/<file>
       "options.prop",
     
     # Items ( per 3 arguments ): Title, Subtitle/description, Item Type
@@ -197,17 +222,20 @@ then
       "ROM Options","",2,
         
         # Item 1.1
-        "Wipe /system.",
-          "Deletes all files from this partition. Recommended if you're coming from another ROM.", 0,
+        "Wipe Dalvik cache",
+          "Deletes this cache. Safe and recommended for all installations.",1,
         
         # Item 1.2
+        "Wipe /system.",
+          "Deletes all files from this partition. Recommended if you're coming from another ROM.", 1,
+        
+        # Item 1.3
         "Wipe /data.",
           "Deletes all files from this partition. Recommended if you're coming from another ROM. Don't select if you want to keep your apps and customizations.", 0,
         
-        # TODO enable this through file in sdcard
-        # enable lagfix
-        #"Enable lagfix on reboot.",
-        #  "Recommended if you want a speed boost.", 0,
+        # Item 1.4
+        "Wipe /cache.",
+          "Deletes all files from this partition. Recommended in all instances.", 0,
       
       # Group 2
       "Modem and Kernel","",2,
@@ -223,8 +251,50 @@ then
       "Other customizations","",2,
         # Item 3.1
         "Install busybox",
-          "(Recommended) Used by many command-line programs.", 1
+          "(Recommended) Used by many command-line programs.", 1,
+      
+      # Group 4
+      "Post Installation Options","",2,
+        # Item 4.1
+        "Reboot Phone",
+          "Restarts the phone as soon as the installation is finished.", 1
+        
+        # TODO enable this through file in sdcard
+        # enable lagfix
+        # "Enable lagfix on reboot.",
+        #   "Recommended if you want a speed boost.", 0,
+        
+      
   );
+endif;
+
+# If the user customized the installation, make sure they know that
+# the /data partition is getting wiped.
+if
+  file_getprop("/tmp/aroma-data/install_type.prop","selected") == "2"
+then
+  if
+  confirm("Wipe /data",
+    "You have selected that you would like to wipe /data.\n"+
+    "This will delete all your installed applications and settings.\n\n"+
+    "If you would like to wipe this partition, select Yes.\n\n"+
+    "If you would NOT like to wipe this partition, select No.\n",
+    "icons/alert",
+    "Yes",
+    "No"
+  ) == "no"
+  then
+    # User selected no, so we're setting wipe to 0
+    writetmpfile(
+      "data_wipe.prop",
+      "wipe=0\n"
+    );
+  else
+    writetmpfile(
+      "data_wipe.prop",
+      "wipe=1\n"
+    );
+  endif;
 endif;
 
 install(
