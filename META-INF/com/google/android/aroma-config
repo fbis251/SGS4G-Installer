@@ -6,7 +6,7 @@
 writetmpfile("rom.prop",readfile_aroma("rom.prop"));
 
 # Configure the variables
-setvar("rom_name",file_getprop(readfile_aroma("rom.prop"),"rom_name"));
+setvar("rom_name",file_getprop("/tmp/aroma-data/rom.prop","rom_name"));
 setvar("rom_version",file_getprop("/tmp/aroma-data/rom.prop","rom_version"));
 setvar("rom_author",file_getprop("/tmp/aroma-data/rom.prop","rom_author"));
 setvar("rom_device",file_getprop("/tmp/aroma-data/rom.prop","rom_device"));
