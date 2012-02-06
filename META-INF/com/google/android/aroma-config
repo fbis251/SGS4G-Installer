@@ -1,9 +1,15 @@
+###############################################################
+# Please do not edit any of the options below unless          #
+# you know what you're doing!                                 #
+###############################################################
+
 ##
 # ROM Information
 #
 
 # Load ROM information into tmp directory
 writetmpfile("rom.prop",readfile_aroma("rom.prop"));
+writetmpfile("color.prop",readfile_aroma("color.prop"));
 
 # Configure the variables
 setvar("rom_name",file_getprop("/tmp/aroma-data/rom.prop","rom_name"));
@@ -13,19 +19,23 @@ setvar("rom_device",file_getprop("/tmp/aroma-data/rom.prop","rom_device"));
 setvar("rom_date",file_getprop("/tmp/aroma-data/rom.prop","rom_date"));
 setvar("rom_packager",file_getprop("/tmp/aroma-data/rom.prop","rom_packager"));
 
+# Default installation options
+setvar("option_install_type",1);
+setvar("option_wipe_dalvik",1);
+setvar("option_wipe_system",1);
+setvar("option_wipe_data",1);
+setvar("option_wipe_cache",1);
+setvar("option_install_modem",1);
+setvar("option_install_kernel",1);
+setvar("option_install_busybox",1);
+setvar("option_reboot_phone",1);
+
 ##
 # Files
 #
 setvar("file_splash_img",      "splash");
 setvar("file_agreement",       readfile_aroma("agreement.txt"));
 setvar("file_changelog",       readfile_aroma("changelog.txt"));
-
-###############################################################
-# Configuration complete.                                     #
-#                                                             #
-# Please do not edit any of the options below unless          #
-# you know what you're doing!                                 #
-###############################################################
 
 # Set up variables
 ini_set("rom_name",             getvar("rom_name"));
@@ -35,7 +45,6 @@ ini_set("rom_device",           getvar("rom_device"));
 
 ##
 # Calibrate Touchscreen
-#  defaut: HTC Desire Touch Screen Calibrate Data 8,-20,8,-20
 #
 # For other device, run the installer, then press "menu"
 # and select Calibrating Tools. Follow Instructions, and make
@@ -70,27 +79,31 @@ calibrate("0.8809","26","0.9507","19");
 #   #fff or #ffffff
 #   #469 or #46689a
 #
-# setcolor("winbg",       "#444");
-# setcolor("winbg_g",     "#000");
-# setcolor("textbg",      "#333");
-# setcolor("textfg",      "#fff");
-# setcolor("textfg_gray", "#bbb");
-# setcolor("controlbg",   "#444");
-# setcolor("controlbg_g", "#000");
-# setcolor("controlfg",   "#fff");
-# setcolor("selectbg",    "#653");
-# setcolor("selectbg_g",  "#542");
-# setcolor("selectfg",    "#ffd");
-# setcolor("titlebg",     "#333");
-# setcolor("titlebg_g",   "#000");
-# setcolor("titlefg",     "#fff");
-# setcolor("navbg",       "#333");
-# setcolor("navbg_g",     "#222");
-# setcolor("border",      "#666");
-# setcolor("border_g",    "#444");
+# You can set the colors in aroma/color.prop
+#
+setcolor("winbg", file_getprop("/tmp/aroma-data/color.prop","winbg"));
+setcolor("winbg_g", file_getprop("/tmp/aroma-data/color.prop","winbg_g"));
+setcolor("textbg", file_getprop("/tmp/aroma-data/color.prop","textbg"));
+setcolor("textfg", file_getprop("/tmp/aroma-data/color.prop","textfg"));
+setcolor("textfg_gray", file_getprop("/tmp/aroma-data/color.prop","textfg_gray"));
+setcolor("controlbg", file_getprop("/tmp/aroma-data/color.prop","controlbg"));
+setcolor("controlbg_g", file_getprop("/tmp/aroma-data/color.prop","controlbg_g"));
+setcolor("controlfg", file_getprop("/tmp/aroma-data/color.prop","controlfg"));
+setcolor("selectbg", file_getprop("/tmp/aroma-data/color.prop","selectbg"));
+setcolor("selectbg_g", file_getprop("/tmp/aroma-data/color.prop","selectbg_g"));
+setcolor("selectfg", file_getprop("/tmp/aroma-data/color.prop","selectfg"));
+setcolor("titlebg", file_getprop("/tmp/aroma-data/color.prop","titlebg"));
+setcolor("titlebg_g", file_getprop("/tmp/aroma-data/color.prop","titlebg_g"));
+setcolor("titlefg", file_getprop("/tmp/aroma-data/color.prop","titlefg"));
+setcolor("navbg", file_getprop("/tmp/aroma-data/color.prop","navbg"));
+setcolor("navbg_g", file_getprop("/tmp/aroma-data/color.prop","navbg_g"));
+setcolor("border", file_getprop("/tmp/aroma-data/color.prop","border"));
+setcolor("border_g", file_getprop("/tmp/aroma-data/color.prop","border_g"));
 
+# Showing our splash screen
 splash(4000, getvar("file_splash_img"));
 
+# Rom information screen
 viewbox(
   # Arg 1
     "Welcome",
@@ -179,7 +192,7 @@ menubox(
     "Install Type",
   
   # Sub Title
-    "Choose a typical or customized installation.",
+    "Choose a quick or customized installation.",
   
   # Icon
     "icons/install",
@@ -189,15 +202,17 @@ menubox(
     
   # Items ( per 3 arguments ): Title, Subtitle/description, Icon
     # Item 1
-    "Typical",    "Install default recommended packages into your phone.", "icons/install",
+    "Quick",    "Install default recommended packages into your phone.", "icons/install",
     
     # Item 2
-    "Customize",  "Install only selected packages into your phone.", "icons/apps"
+    "Customized",  "Choose what you would like installed on your phone.", "icons/apps"
 );
+
+setvar("option_install_type",file_getprop("/tmp/aroma-data/install_type.prop","selected"));
 
 if
   # User chose customized installation
-  file_getprop("/tmp/aroma-data/install_type.prop","selected") == "2"
+  getvar("option_install_type") == "2"
 then
   checkbox(
     # Title
@@ -210,7 +225,7 @@ then
       "icons/apps",
     
     # Will be saved in /tmp/aroma-data/<file>
-      "options.prop",
+      "customized.prop",
     
     # Items ( per 3 arguments ): Title, Subtitle/description, Item Type
     #   Item Type:
@@ -235,7 +250,7 @@ then
         
         # Item 1.4
         "Wipe /cache.",
-          "Deletes all files from this partition. Recommended in all instances.", 0,
+          "Deletes all files from this partition. Recommended in all instances.", 1,
       
       # Group 2
       "Modem and Kernel","",2,
@@ -251,56 +266,79 @@ then
       "Other customizations","",2,
         # Item 3.1
         "Install busybox",
-          "(Recommended) Used by many command-line programs.", 1,
-      
-      # Group 4
-      "Post Installation Options","",2,
-        # Item 4.1
-        "Reboot Phone",
-          "Restarts the phone as soon as the installation is finished.", 1
-        
-        # TODO enable this through file in sdcard
-        # enable lagfix
-        # "Enable lagfix on reboot.",
-        #   "Recommended if you want a speed boost.", 0,
-        
-      
+          "(Recommended) Used by many command-line programs.", 1
+          
   );
+  
+  # Now we set the customized variables.
+  setvar("option_wipe_dalvik",file_getprop("/tmp/aroma-data/customized.prop","item.1.1"));
+  setvar("option_wipe_system",file_getprop("/tmp/aroma-data/customized.prop","item.1.2"));
+  setvar("option_wipe_data",file_getprop("/tmp/aroma-data/customized.prop","item.1.3"));
+  setvar("option_wipe_cache",file_getprop("/tmp/aroma-data/customized.prop","item.1.4"));
+  setvar("option_install_modem",file_getprop("/tmp/aroma-data/customized.prop","item.2.1"));
+  setvar("option_install_kernel",file_getprop("/tmp/aroma-data/customized.prop","item.2.2"));
+  setvar("option_install_busybox",file_getprop("/tmp/aroma-data/customized.prop","item.3.1"));
 endif;
 
-# If the user customized the installation, make sure they know that
-# the /data partition is getting wiped.
 if
-  file_getprop("/tmp/aroma-data/install_type.prop","selected") == "2"
+  # If the user customized the installation, make sure they know that
+  # the /data partition is getting wiped.
+  (getvar("option_install_type") == "2" && getvar("option_wipe_data") == "1")
 then
   if
-  confirm("Wipe /data",
-    "You have selected that you would like to wipe /data.\n"+
-    "This will delete all your installed applications and settings.\n\n"+
-    "If you would like to wipe this partition, select Yes.\n\n"+
-    "If you would NOT like to wipe this partition, select No.\n",
+  confirm(
+    # Arg 1
+    "Wipe /data",
+    # Arg 2
+    "You have selected that you would like to wipe /data.\n" +
+    "This will delete all your installed applications and settings.\n\n" +
+    "If you would like to wipe this partition, select Yes.\n\n" +
+    "If you would NOT like to wipe this partition, select No.\n" +
+    "",
+    # Arg 3
     "icons/alert",
+    # Arg 4
     "Yes",
+    # Arg 5
     "No"
   ) == "no"
   then
     # User selected no, so we're setting wipe to 0
-    writetmpfile(
-      "data_wipe.prop",
-      "wipe=0\n"
-    );
-  else
-    writetmpfile(
-      "data_wipe.prop",
-      "wipe=1\n"
-    );
+    setvar("option_wipe_data","0");
   endif;
 endif;
 
+if
+  confirm(
+    "Reboot phone?",
+    "Would you like your phone to automatically reboot when the installation is done?\n",
+    "icons/info",
+    "Yes",
+    "No"
+  ) == "no"
+then
+  setvar("option_reboot_phone","0");
+endif;
+
+# Now we write out all our install options
+writetmpfile(
+  "options.prop",
+  "option_wipe_dalvik=" + getvar("option_wipe_dalvik") + "\n" +
+  "option_wipe_system=" + getvar("option_wipe_system") + "\n" +
+  "option_wipe_data=" + getvar("option_wipe_data") + "\n" +
+  "option_wipe_cache=" + getvar("option_wipe_cache") + "\n" +
+  "option_install_modem=" + getvar("option_install_modem") + "\n" +
+  "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
+  "option_install_busybox=" + getvar("option_install_busybox") + "\n" +
+  "option_reboot_phone=" + getvar("option_reboot_phone") + "\n" +
+  "\n"
+);
+
 install(
   "Installing",
-  getvar("rom_name")+"\n"+
-  "Please wait until the install completes.",
+  getvar("rom_name") + "\n" +
+  "Please wait until the install completes." +
+  "",
   "icons/install"
 );
 

@@ -1,8 +1,13 @@
-Add a color.prop for easier color configuration.
+Check if we're using the SGS4G.
 We need a team acid logo (for splash).
-Figure out what would be the best percentage increments
-Add a reboot dialog after installation
+Enable voodoo lagfix through file in sdcard
 
+Customizations
+  Wallpapers
+  Launchers
+  Bloatware
+  Different bootanimations?
+  
 # DONE #
 Check if we're currently on Froyo. If we are abort installation and inform the user that GB bootloaders are needed.
 	ro.build.id=GINGERBREAD
@@ -10,3 +15,6 @@ Figure out if functions can be used for installation options. (No they can't...)
 Add a popup asking if the user wants to reboot (Added it in install options)
 Add an option to wipe dalvik cache
 Warn the user if they're about to wipe partitions (Only for the data partition)
+Add a reboot dialog after installation
+Figure out what would be the best percentage increments
+Add a color.prop for easier color configuration.
