@@ -1,6 +1,7 @@
-Check if we're using the SGS4G.
 We need a team acid logo (for splash).
-Enable voodoo lagfix through file in sdcard
+Take out wipes and use bonsai's data backup/restore
+  Change to tar instead of cpio
+Check sdcard free space for data backup, add warning if not enough space before script runs.
 
 Customizations
   Wallpapers
@@ -18,3 +19,11 @@ Warn the user if they're about to wipe partitions (Only for the data partition)
 Add a reboot dialog after installation
 Figure out what would be the best percentage increments
 Add a color.prop for easier color configuration.
+Check if we're using the SGS4G.
+Enable voodoo lagfix through file in sdcard (not needed)
+New Aroma Update
+  Add reboot phone now dialog after the installer is done
+    Not needed, the installer asks before the install gets going
+  Force mount before the script runs.
+    Should help with backups and calculating partition sizes
+    

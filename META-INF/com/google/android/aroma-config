@@ -4,40 +4,46 @@
 ###############################################################
 
 ##
-# ROM Information
-#
-
 # Load ROM information into tmp directory
-writetmpfile("rom.prop",readfile_aroma("rom.prop"));
+#
 writetmpfile("color.prop",readfile_aroma("color.prop"));
 
+##
 # Configure the variables
-setvar("rom_name",file_getprop("/tmp/aroma-data/rom.prop","rom_name"));
-setvar("rom_version",file_getprop("/tmp/aroma-data/rom.prop","rom_version"));
-setvar("rom_author",file_getprop("/tmp/aroma-data/rom.prop","rom_author"));
-setvar("rom_device",file_getprop("/tmp/aroma-data/rom.prop","rom_device"));
-setvar("rom_date",file_getprop("/tmp/aroma-data/rom.prop","rom_date"));
-setvar("rom_packager",file_getprop("/tmp/aroma-data/rom.prop","rom_packager"));
+#
+setvar("rom_name",resprop("rom.prop","rom_name"));
+setvar("rom_version",resprop("rom.prop","rom_version"));
+setvar("rom_author",resprop("rom.prop","rom_author"));
+setvar("rom_device",resprop("rom.prop","rom_device"));
+setvar("rom_date",resprop("rom.prop","rom_date"));
+setvar("rom_packager",resprop("rom.prop","rom_packager"));
 
+##
 # Default installation options
+#
 setvar("option_install_type",1);
-setvar("option_wipe_dalvik",1);
-setvar("option_wipe_system",1);
-setvar("option_wipe_data",1);
-setvar("option_wipe_cache",1);
+setvar("option_do_data_backup",0);
 setvar("option_install_modem",1);
 setvar("option_install_kernel",1);
 setvar("option_install_busybox",1);
 setvar("option_reboot_phone",1);
 
 ##
+# SET THEME
+#
+# Look under aroma/themes/ for theme files
+#
+theme("ics");
+
+##
 # Files
 #
-setvar("file_splash_img",      "splash");
 setvar("file_agreement",       readfile_aroma("agreement.txt"));
 setvar("file_changelog",       readfile_aroma("changelog.txt"));
 
+##
 # Set up variables
+#
 ini_set("rom_name",             getvar("rom_name"));
 ini_set("rom_version",          getvar("rom_version"));
 ini_set("rom_author",           getvar("rom_author"));
@@ -81,33 +87,58 @@ calibrate("0.8809","26","0.9507","19");
 #
 # You can set the colors in aroma/color.prop
 #
-setcolor("winbg", file_getprop("/tmp/aroma-data/color.prop","winbg"));
-setcolor("winbg_g", file_getprop("/tmp/aroma-data/color.prop","winbg_g"));
-setcolor("textbg", file_getprop("/tmp/aroma-data/color.prop","textbg"));
-setcolor("textfg", file_getprop("/tmp/aroma-data/color.prop","textfg"));
-setcolor("textfg_gray", file_getprop("/tmp/aroma-data/color.prop","textfg_gray"));
-setcolor("controlbg", file_getprop("/tmp/aroma-data/color.prop","controlbg"));
-setcolor("controlbg_g", file_getprop("/tmp/aroma-data/color.prop","controlbg_g"));
-setcolor("controlfg", file_getprop("/tmp/aroma-data/color.prop","controlfg"));
-setcolor("selectbg", file_getprop("/tmp/aroma-data/color.prop","selectbg"));
-setcolor("selectbg_g", file_getprop("/tmp/aroma-data/color.prop","selectbg_g"));
-setcolor("selectfg", file_getprop("/tmp/aroma-data/color.prop","selectfg"));
-setcolor("titlebg", file_getprop("/tmp/aroma-data/color.prop","titlebg"));
-setcolor("titlebg_g", file_getprop("/tmp/aroma-data/color.prop","titlebg_g"));
-setcolor("titlefg", file_getprop("/tmp/aroma-data/color.prop","titlefg"));
-setcolor("navbg", file_getprop("/tmp/aroma-data/color.prop","navbg"));
-setcolor("navbg_g", file_getprop("/tmp/aroma-data/color.prop","navbg_g"));
-setcolor("border", file_getprop("/tmp/aroma-data/color.prop","border"));
-setcolor("border_g", file_getprop("/tmp/aroma-data/color.prop","border_g"));
+# setcolor("winbg", resprop("color.prop","winbg"));
+# setcolor("winbg_g", resprop("color.prop","winbg_g"));
+# setcolor("textbg", resprop("color.prop","textbg"));
+# setcolor("textfg", resprop("color.prop","textfg"));
+# setcolor("textfg_gray", resprop("color.prop","textfg_gray"));
+# setcolor("controlbg", resprop("color.prop","controlbg"));
+# setcolor("controlbg_g", resprop("color.prop","controlbg_g"));
+# setcolor("controlfg", resprop("color.prop","controlfg"));
+# setcolor("selectbg", resprop("color.prop","selectbg"));
+# setcolor("selectbg_g", resprop("color.prop","selectbg_g"));
+# setcolor("selectfg", resprop("color.prop","selectfg"));
+# setcolor("titlebg", resprop("color.prop","titlebg"));
+# setcolor("titlebg_g", resprop("color.prop","titlebg_g"));
+# setcolor("titlefg", resprop("color.prop","titlefg"));
+# setcolor("navbg", resprop("color.prop","navbg"));
+# setcolor("navbg_g", resprop("color.prop","navbg_g"));
+# setcolor("border", resprop("color.prop","border"));
+# setcolor("border_g", resprop("color.prop","border_g"));
 
-# Showing our splash screen
-splash(4000, getvar("file_splash_img"));
+##
+# Tasks to run before the installer starts
+#
+# Mount all the mount points. We can manipulate the filesystem before the install.
+#
+run_program("/sbin/mount", "/dev/block/stl9 /system");
+run_program("/sbin/mount", "/dev/block/stl10 /data");
+run_program("/sbin/mount", "/dev/block/stl11 /cache");
 
+##
+# Show Animated Splash for
+#
+# Image Will auto arrange into center horizontal&vertical
+#
+anisplash(
+  # Number of Loop
+  10,
+  
+  # Frame 1 [ Image, duration in millisecond ]
+  "splash/ani4", 10,
+  "splash/ani3", 10,
+  "splash/ani2", 10,
+  "splash/ani1", 10,
+  "splash/ani2", 10,
+  "splash/ani3", 10
+);
+
+##
 # Rom information screen
+#
 viewbox(
   # Arg 1
     "Welcome",
-  
   # Arg 2
     "You are about to install:\n" +
     "<#080>"+getvar("rom_name") + "</#>\n\n"+
@@ -123,10 +154,30 @@ viewbox(
     "<#080>"+getvar("rom_packager")+"</#>\n\n\n"+
     "Select Next to continue."+
     "",
-  
   # Arg 3
     "icons/info"
 );
+
+if
+  # Check if we're using the SGS4G
+  file_getprop("/system/build.prop","ro.product.device") != "SGH-T959V"
+then
+  alert(
+    # Arg 1
+      "Wrong Device!",
+    # Arg 2
+      "This ROM is only for the\n" +
+      "Galaxy S 4G (SGH-T959V).\n" +
+      "You are using the following device:\n" +
+      file_getprop("/system/build.prop","ro.product.device") + "\n" +
+      "Installation will now exit.",
+    # Arg 3
+      "icons/alert",
+    # Arg 4
+      "Exit Installation"
+  );
+  exit();
+endif;
 
 if
   # This is where we check if the user is on a version we don't want.
@@ -137,38 +188,51 @@ then
   alert(
     # Arg 1
       "You are not on Gingerbread!",
-    
     # Arg 2
       "This ROM will only work if you are running Gingerbread.\n" +
       "You are currently running Froyo.\n" +
       "Please find instructions on how to install this rom.\n"+
       "Thank you.",
-    
     # Arg 3
       "icons/alert",
-    
     # Arg 4
       "Exit Installation"
   );
   exit();
 endif;
 
+viewbox(
+  # Arg 1
+    "Filesystem Information",
+  # Arg 2
+    "/system free space:\n" +
+    getdiskfree("/system","m") + "/" + getdisksize("/system","m") + "mB (" + getdiskusedpercent("/system") + "% used)" +
+    "\n\n" +
+    "/cache free space:\n" +
+    getdiskfree("/cache","m")  + "/" + getdisksize("/cache","m")  + "mB (" + getdiskusedpercent("/cache")  + "% used)" +
+    "\n\n" +
+    "/data free space:\n" +
+    getdiskfree("/data","m")   + "/" + getdisksize("/data","m")   + "mB (" + getdiskusedpercent("/data")   + "% used)" +
+    "\n\n" +
+    # "/sdcard free space:\n" +
+    # getdiskfree("/sdcard","g") + "/" + getdisksize("/sdcard","g") + "gB (" + getdiskusedpercent("/sdcard") + "% used)" +
+    # "\n\n" +
+    "",
+  # Arg 3
+    "icons/info"
+);
+
 agreebox(
   # Arg 1
     "Terms Of Use",
-  
   # Arg 2
     "Please read the Terms of Use below.",
-  
   # Arg 3
     "icons/agreement",
-  
   # Arg 4
     getvar("file_agreement"),
-  
   # 5
     "I agree to the Terms of Use.",
-  
   # 6
     "Please agree to the Terms of Use to continue with the installation."
 );
@@ -176,13 +240,10 @@ agreebox(
 textbox(
   # Arg 1
     "Changelog",
-  
   # Arg 2
   getvar("rom_name"),
-  
   # Arg 3
     "icons/info",
-  
   # Arg 4
     getvar("file_changelog");
 );
@@ -190,25 +251,19 @@ textbox(
 menubox(
   # Title
     "Install Type",
-  
   # Sub Title
     "Choose a quick or customized installation.",
-  
   # Icon
     "icons/install",
-    
   # Will be saved in /tmp/aroma-data/<file>
     "install_type.prop",
-    
   # Items ( per 3 arguments ): Title, Subtitle/description, Icon
     # Item 1
     "Quick",    "Install default recommended packages into your phone.", "icons/install",
-    
     # Item 2
     "Customized",  "Choose what you would like installed on your phone.", "icons/apps"
 );
-
-setvar("option_install_type",file_getprop("/tmp/aroma-data/install_type.prop","selected"));
+setvar("option_install_type", prop("install_type.prop","selected"));
 
 if
   # User chose customized installation
@@ -217,16 +272,12 @@ then
   checkbox(
     # Title
       "Select Installation Options",
-    
     # Sub Title
       "Please select installation options below:",
-    
     # Icon
       "icons/apps",
-    
     # Will be saved in /tmp/aroma-data/<file>
       "customized.prop",
-    
     # Items ( per 3 arguments ): Title, Subtitle/description, Item Type
     #   Item Type:
     #   0 = Unchecked by default
@@ -234,78 +285,30 @@ then
     #   2 = Item Group Title ( the subtitle won't be used )
     #
       # Group 1
-      "ROM Options","",2,
-        
+      "Backup Options","",2,
         # Item 1.1
-        "Wipe Dalvik cache",
-          "Deletes this cache. Safe and recommended for all installations.",1,
-        
-        # Item 1.2
-        "Wipe /system.",
-          "Deletes all files from this partition. Recommended if you're coming from another ROM.", 1,
-        
-        # Item 1.3
-        "Wipe /data.",
-          "Deletes all files from this partition. Recommended if you're coming from another ROM. Don't select if you want to keep your apps and customizations.", 0,
-        
-        # Item 1.4
-        "Wipe /cache.",
-          "Deletes all files from this partition. Recommended in all instances.", 1,
-      
+        "Backup /data partition",
+          "Makes a backup of your whole /data partition (for your apps and settings).",1,
       # Group 2
       "Modem and Kernel","",2,
         # Item 2.1
         "Install Modem",
           "Samsung Galaxy S 4G KJ6 Modem.", 1,
-        
         # Item 2.2
         "Install Kernel",
           "bhundven's SMS-KJ6 Kernel.",1,
-        
       # Group 3
       "Other customizations","",2,
         # Item 3.1
         "Install busybox",
           "(Recommended) Used by many command-line programs.", 1
-          
   );
   
   # Now we set the customized variables.
-  setvar("option_wipe_dalvik",file_getprop("/tmp/aroma-data/customized.prop","item.1.1"));
-  setvar("option_wipe_system",file_getprop("/tmp/aroma-data/customized.prop","item.1.2"));
-  setvar("option_wipe_data",file_getprop("/tmp/aroma-data/customized.prop","item.1.3"));
-  setvar("option_wipe_cache",file_getprop("/tmp/aroma-data/customized.prop","item.1.4"));
-  setvar("option_install_modem",file_getprop("/tmp/aroma-data/customized.prop","item.2.1"));
-  setvar("option_install_kernel",file_getprop("/tmp/aroma-data/customized.prop","item.2.2"));
-  setvar("option_install_busybox",file_getprop("/tmp/aroma-data/customized.prop","item.3.1"));
-endif;
-
-if
-  # If the user customized the installation, make sure they know that
-  # the /data partition is getting wiped.
-  (getvar("option_install_type") == "2" && getvar("option_wipe_data") == "1")
-then
-  if
-  confirm(
-    # Arg 1
-    "Wipe /data",
-    # Arg 2
-    "You have selected that you would like to wipe /data.\n" +
-    "This will delete all your installed applications and settings.\n\n" +
-    "If you would like to wipe this partition, select Yes.\n\n" +
-    "If you would NOT like to wipe this partition, select No.\n" +
-    "",
-    # Arg 3
-    "icons/alert",
-    # Arg 4
-    "Yes",
-    # Arg 5
-    "No"
-  ) == "no"
-  then
-    # User selected no, so we're setting wipe to 0
-    setvar("option_wipe_data","0");
-  endif;
+  setvar("option_do_data_backup",prop("customized.prop","item.1.1"));
+  setvar("option_install_modem",prop("customized.prop","item.2.1"));
+  setvar("option_install_kernel",prop("customized.prop","item.2.2"));
+  setvar("option_install_busybox",prop("customized.prop","item.3.1"));
 endif;
 
 if
@@ -320,13 +323,12 @@ then
   setvar("option_reboot_phone","0");
 endif;
 
+##
 # Now we write out all our install options
+#
 writetmpfile(
   "options.prop",
-  "option_wipe_dalvik=" + getvar("option_wipe_dalvik") + "\n" +
-  "option_wipe_system=" + getvar("option_wipe_system") + "\n" +
-  "option_wipe_data=" + getvar("option_wipe_data") + "\n" +
-  "option_wipe_cache=" + getvar("option_wipe_cache") + "\n" +
+  "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
   "option_install_modem=" + getvar("option_install_modem") + "\n" +
   "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
   "option_install_busybox=" + getvar("option_install_busybox") + "\n" +
@@ -334,13 +336,13 @@ writetmpfile(
   "\n"
 );
 
-install(
-  "Installing",
-  getvar("rom_name") + "\n" +
-  "Please wait until the install completes." +
-  "",
-  "icons/install"
-);
+# install(
+  # "Installing",
+  # getvar("rom_name") + "\n" +
+  # "Please wait until the install completes." +
+  # "",
+  # "icons/install"
+# );
 
 ini_set("text_next", "Finish");
 

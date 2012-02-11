@@ -1,44 +1,73 @@
-ui_print("@ Mounting partitions");
+# ui_print("@ Mounting partitions");
+# 
+# run_program("/sbin/mount", "/dev/block/stl9 /system");
+# run_program("/sbin/mount", "/dev/block/stl10 /data");
+# run_program("/sbin/mount", "/dev/block/stl11 /cache");
+
 show_progress(0.0, 0);
-run_program("/sbin/mount", "/dev/block/stl9 /system");
-run_program("/sbin/mount", "/dev/block/stl10 /data");
-run_program("/sbin/mount", "/dev/block/stl11 /cache");
+ui_print("@ Copying files required to format...");
+package_extract_file("tools/fsck.ext4", "/tmp/fsck.ext4");
+package_extract_file("tools/tune2fs.ext4", "/tmp/tune2fs.ext4");
+package_extract_file("tools/mkfs.ext4", "/tmp/mkfs.ext4");
+package_extract_file("etc/mke2fs.conf", "/etc/mke2fs.conf");
+package_extract_file("tools/data-backup", "/tmp/data-backup");
+package_extract_file("tools/data-restore", "/tmp/data-restore");
+package_extract_file("tools/busybox", "/tmp/busybox");
+set_perm(0, 0, 0755, "/tmp/mkfs.ext4");
+set_perm(0, 0, 0755, "/tmp/fsck.ext4");
+set_perm(0, 0, 0755, "/tmp/tune2fs.ext4");
+set_perm(0, 0, 0644, "/etc/mke2fs.conf");
+set_perm(0, 0, 0755, "/tmp/data-backup");
+set_perm(0, 0, 0755, "/tmp/data-restore");
+set_perm(0, 0, 0755, "/tmp/busybox");
 
-# For all the option-checking conditionals,
-# install_type 1 = "typical" installation
-# install_type 2 = "customized" installation
-# if customized, check if the option for this action was selected
-if
- file_getprop("/tmp/aroma-data/options.prop","option_wipe_dalvik") == "1"
-then
-  ui_print("@ Wiping Dalvik cache");
-  delete_recursive("/data/dalvik-cache");
-endif;
-set_progress(0.1);
+# if
+ # file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
+# then
+  # # Run the modified bonsai backup script
+  # ui_print("@ Backing up /data");
+  # ui_print("Backing up /data...");
+  # set_progress(0.1);
+  # run_program("/tmp/data-backup");
+  # unmount("/data");
+  # unmount("/sdcard");
+  # ui_print("Backup complete...");
+# endif;
 
-if
- file_getprop("/tmp/aroma-data/options.prop","option_wipe_system") == "1"
-then
-  ui_print("@ Wiping /system");
-  delete_recursive("/system");
-endif;
-set_progress(0.15);
-
-if
- file_getprop("/tmp/aroma-data/options.prop","option_wipe_data") == "1"
-then
-  ui_print("@ Wiping /data");
-  delete_recursive("/data");
-endif;
+ui_print("@ Formatting stll9 - /system...");
+unmount("/system");
+run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl9");
+run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "SYSTEM", "-b", "4096", "-m", "0", "-F", "/dev/block/stl9");
+ui_print("Tuning filesystem...");
+run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl9");
+run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl9");
+ui_print("Formatting /system complete!");
 set_progress(0.2);
 
-if
- file_getprop("/tmp/aroma-data/options.prop","option_wipe_cache") == "1"
-then
-  ui_print("@ Wiping /cache");
-  delete_recursive("/cache");
-endif;
+ui_print("@ Formatting stl10 - /data...");
+unmount("/data");
+run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl10");
+run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "DATA", "-b", "4096", "-m", "0", "-F", "/dev/block/stl10");
+ui_print("Tuning filesystem...");
+run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl10");
+run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl10");
+ui_print("Formatting /data complete!");
+set_progress(0.25);
+
+ui_print("@ Formatting stl11 - /cache...");
+unmount("/cache");
+run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl11");
+run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "CACHE", "-b", "4096", "-m", "0", "-F", "/dev/block/stl11");
+ui_print("Tuning filesystem...");
+run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl11");
+run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl11");
+ui_print("Formatting /cache complete!");
 set_progress(0.3);
+
+ui_print("@ Mounting partitions as ext4");
+run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl9", "/system");
+run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl10", "/data");
+run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl11", "/cache");
 
 ui_print("@ Extracting Files");
 # show progress takes two arguments
@@ -111,6 +140,15 @@ then
   run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
 endif;
 set_progress(0.95);
+
+# if
+ # file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
+# then
+  # ui_print("@ Restoring applications and data");
+  # set_progress(0.97);
+  # run_program("/tmp/data-restore");
+  # ui_print("Restore completed...");
+# endif;
 
 ui_print("@ Unmounting partitions");
 run_program("/sbin/umount", "/system");
