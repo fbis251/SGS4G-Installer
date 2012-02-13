@@ -1,7 +1,5 @@
 We need a team acid logo (for splash).
-Take out wipes and use bonsai's data backup/restore
-  Change to tar instead of cpio
-Check sdcard free space for data backup, add warning if not enough space before script runs.
+Check sdcard free space for data backup, add warning if not enough space before script runs. (there's a bug for this, need to contact installer dev)
 
 Customizations
   Wallpapers
@@ -26,4 +24,5 @@ New Aroma Update
     Not needed, the installer asks before the install gets going
   Force mount before the script runs.
     Should help with backups and calculating partition sizes
-    
+Take out wipes and use bonsai's data backup/restore
+  Change to tar instead of cpio (not needed, cpio saves a LOT of space)

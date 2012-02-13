@@ -1,11 +1,19 @@
-# ui_print("@ Mounting partitions");
-# 
-# run_program("/sbin/mount", "/dev/block/stl9 /system");
-# run_program("/sbin/mount", "/dev/block/stl10 /data");
-# run_program("/sbin/mount", "/dev/block/stl11 /cache");
+if
+   file_getprop("/tmp/aroma-data/options.prop","option_install_type") == "1"
+then
+  ui_print("@ Performing a quick install");
+else
+  ui_print("@ Performing a customized install");
+endif;
+
+ui_print("@ Mounting partitions");
+
+run_program("/sbin/mount", "/dev/block/stl9 /system");
+run_program("/sbin/mount", "/dev/block/stl10 /data");
+run_program("/sbin/mount", "/dev/block/stl11 /cache");
 
 show_progress(0.0, 0);
-ui_print("@ Copying files required to format...");
+ui_print("@ Copying files required to format");
 package_extract_file("tools/fsck.ext4", "/tmp/fsck.ext4");
 package_extract_file("tools/tune2fs.ext4", "/tmp/tune2fs.ext4");
 package_extract_file("tools/mkfs.ext4", "/tmp/mkfs.ext4");
@@ -20,48 +28,50 @@ set_perm(0, 0, 0644, "/etc/mke2fs.conf");
 set_perm(0, 0, 0755, "/tmp/data-backup");
 set_perm(0, 0, 0755, "/tmp/data-restore");
 set_perm(0, 0, 0755, "/tmp/busybox");
+set_progress(0.05);
 
-# if
- # file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
-# then
-  # # Run the modified bonsai backup script
-  # ui_print("@ Backing up /data");
-  # ui_print("Backing up /data...");
-  # set_progress(0.1);
-  # run_program("/tmp/data-backup");
-  # unmount("/data");
-  # unmount("/sdcard");
-  # ui_print("Backup complete...");
-# endif;
+if
+  file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
+then
+  # Run the modified bonsai backup script
+  ui_print("@ Backing up /data");
+  ui_print("Backing up /data");
+  ui_print("This may take a few minutes");
+  run_program("/tmp/data-backup");
+  unmount("/data");
+  unmount("/sdcard");
+  ui_print("Backup complete");
+  set_progress(0.1);
+endif;
 
-ui_print("@ Formatting stll9 - /system...");
+ui_print("@ Formatting /system");
 unmount("/system");
 run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl9");
 run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "SYSTEM", "-b", "4096", "-m", "0", "-F", "/dev/block/stl9");
-ui_print("Tuning filesystem...");
+ui_print("Tuning filesystem");
 run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl9");
 run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl9");
-ui_print("Formatting /system complete!");
+ui_print("Formatting /system complete");
 set_progress(0.2);
 
-ui_print("@ Formatting stl10 - /data...");
+ui_print("@ Formatting /data");
 unmount("/data");
 run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl10");
 run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "DATA", "-b", "4096", "-m", "0", "-F", "/dev/block/stl10");
-ui_print("Tuning filesystem...");
+ui_print("Tuning filesystem");
 run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl10");
 run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl10");
-ui_print("Formatting /data complete!");
+ui_print("Formatting /data complete");
 set_progress(0.25);
 
-ui_print("@ Formatting stl11 - /cache...");
+ui_print("@ Formatting /cache");
 unmount("/cache");
 run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl11");
 run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "CACHE", "-b", "4096", "-m", "0", "-F", "/dev/block/stl11");
-ui_print("Tuning filesystem...");
+ui_print("Tuning filesystem");
 run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl11");
 run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl11");
-ui_print("Formatting /cache complete!");
+ui_print("Formatting /cache complete");
 set_progress(0.3);
 
 ui_print("@ Mounting partitions as ext4");
@@ -79,7 +89,7 @@ ui_print("Extracting /system");
 package_extract_dir("system", "/system");
 ui_print("Extracting /data");
 package_extract_dir("data", "/data");
-ui_print("Extracting /sdard");
+ui_print("Extracting /sdcard");
 package_extract_dir("sdcard", "/sdcard");
 ui_print("Extracting updates");
 package_extract_dir("updates", "/tmp/updates");
@@ -98,7 +108,7 @@ symlink("toolbox","/system/bin/cat","/system/bin/chmod","/system/bin/chown","/sy
         "/system/bin/rmmod","/system/bin/route","/system/bin/schedtop","/system/bin/sendevent","/system/bin/setconsole",
         "/system/bin/setprop","/system/bin/sleep","/system/bin/smd","/system/bin/start","/system/bin/stop","/system/bin/sync",
         "/system/bin/top","/system/bin/umount","/system/bin/vmstat","/system/bin/watchprops","/system/bin/wipe");
-set_progress(0.6);
+set_progress(0.55);
 
 ui_print("@ Setting permissions");
 set_perm_recursive(0, 0, 0755, 0644, "system");
@@ -116,39 +126,40 @@ set_perm(0, 2000, 0550, "/system/etc/init.goldfish.sh");
 set_perm(0, 0, 04755, "/system/xbin/su");
 set_perm(0, 0, 04755, "/system/xbin/busybox");
 set_perm(0, 0, 755, "/tmp/updates/redbend_ua");
-set_progress(0.7);
+set_progress(0.6);
 
 if
- file_getprop("/tmp/aroma-data/options.prop","option_install_modem") == "1"
+  file_getprop("/tmp/aroma-data/options.prop","option_install_modem") == "1"
 then
   ui_print("@ Flashing modem");
   run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", "/dev/block/bml12");
 endif;
-set_progress(0.8);
+set_progress(0.7);
 
 if
- file_getprop("/tmp/aroma-data/options.prop","option_install_kernel") == "1"
+  file_getprop("/tmp/aroma-data/options.prop","option_install_kernel") == "1"
 then
   ui_print("@ Flashing kernel");
   run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
 endif;
-  set_progress(0.9);
+  set_progress(0.75);
 if
- file_getprop("/tmp/aroma-data/options.prop","option_install_busybox") == "1"
+  file_getprop("/tmp/aroma-data/options.prop","option_install_busybox") == "1"
 then
   ui_print("@ Installing busybox");
   run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
 endif;
-set_progress(0.95);
+set_progress(0.8);
 
-# if
- # file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
-# then
-  # ui_print("@ Restoring applications and data");
-  # set_progress(0.97);
-  # run_program("/tmp/data-restore");
-  # ui_print("Restore completed...");
-# endif;
+if
+  file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
+then
+  ui_print("@ Restoring applications and data");
+  ui_print("This may take a while");
+  run_program("/tmp/data-restore");
+  ui_print("Restore completed");
+  set_progress(0.9);
+endif;
 
 ui_print("@ Unmounting partitions");
 run_program("/sbin/umount", "/system");
@@ -160,7 +171,7 @@ show_progress(1.0, 0);
 ui_print("@ Update complete");
 
 if
- file_getprop("/tmp/aroma-data/options.prop","option_reboot_phone") == "1"
+  file_getprop("/tmp/aroma-data/options.prop","option_reboot_phone") == "1"
 then
   ui_print("@ Rebooting phone");
   run_program("/sbin/reboot");

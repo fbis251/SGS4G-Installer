@@ -41,4 +41,3 @@ if $BB test -d $datadir; then
   fi
   exit 0
 fi
-

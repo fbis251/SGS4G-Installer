@@ -4,11 +4,6 @@
 ###############################################################
 
 ##
-# Load ROM information into tmp directory
-#
-writetmpfile("color.prop",readfile_aroma("color.prop"));
-
-##
 # Configure the variables
 #
 setvar("rom_name",resprop("rom.prop","rom_name"));
@@ -17,6 +12,11 @@ setvar("rom_author",resprop("rom.prop","rom_author"));
 setvar("rom_device",resprop("rom.prop","rom_device"));
 setvar("rom_date",resprop("rom.prop","rom_date"));
 setvar("rom_packager",resprop("rom.prop","rom_packager"));
+
+##
+# Splash screen (animated or static)
+#
+setvar("splash", "static");
 
 ##
 # Default installation options
@@ -63,50 +63,6 @@ ini_set("rom_device",           getvar("rom_device"));
 calibrate("0.8809","26","0.9507","19");
 
 ##
-# Set UI Color
-# foo   = Main Color ( If Gradient, it was Top Color )
-# foo_g = Main Color Gradient ( Bottom Color )
-#
-#   winbg       : Main/Top Most Window Backgroud
-#   textbg      : Textbox, Checkbox, and any scrollable UI Background
-#   textfg      : Textbox, Checkbox, and any scrollable UI Text Foreground
-#   textfg_gray : Gray Text ( on Optionbox/Checkbox Item Description )
-#   controlbg   : Control / Button / Checkbox border - Background Color
-#   controlfg   : Button Text Color
-#   selectbg    : Selected Element Background ( Pushed/focused Button/items, etc )
-#   selectfg    : Selected Element Text/Foreground Color
-#   titlebg     : Window Title Background
-#   titlefg     : Window Title Text Foreground Color
-#   navbg       : Bottom Bar (Navigation Bar) Background. Next-Previous Area
-#   border      : Common Border Color
-#
-#
-# Supported 3 & 6 Char Hex Colors:
-#   #fff or #ffffff
-#   #469 or #46689a
-#
-# You can set the colors in aroma/color.prop
-#
-# setcolor("winbg", resprop("color.prop","winbg"));
-# setcolor("winbg_g", resprop("color.prop","winbg_g"));
-# setcolor("textbg", resprop("color.prop","textbg"));
-# setcolor("textfg", resprop("color.prop","textfg"));
-# setcolor("textfg_gray", resprop("color.prop","textfg_gray"));
-# setcolor("controlbg", resprop("color.prop","controlbg"));
-# setcolor("controlbg_g", resprop("color.prop","controlbg_g"));
-# setcolor("controlfg", resprop("color.prop","controlfg"));
-# setcolor("selectbg", resprop("color.prop","selectbg"));
-# setcolor("selectbg_g", resprop("color.prop","selectbg_g"));
-# setcolor("selectfg", resprop("color.prop","selectfg"));
-# setcolor("titlebg", resprop("color.prop","titlebg"));
-# setcolor("titlebg_g", resprop("color.prop","titlebg_g"));
-# setcolor("titlefg", resprop("color.prop","titlefg"));
-# setcolor("navbg", resprop("color.prop","navbg"));
-# setcolor("navbg_g", resprop("color.prop","navbg_g"));
-# setcolor("border", resprop("color.prop","border"));
-# setcolor("border_g", resprop("color.prop","border_g"));
-
-##
 # Tasks to run before the installer starts
 #
 # Mount all the mount points. We can manipulate the filesystem before the install.
@@ -114,24 +70,41 @@ calibrate("0.8809","26","0.9507","19");
 run_program("/sbin/mount", "/dev/block/stl9 /system");
 run_program("/sbin/mount", "/dev/block/stl10 /data");
 run_program("/sbin/mount", "/dev/block/stl11 /cache");
+run_program("/sbin/mount", "/dev/block/mmcblk0p1 /sdcard");
 
-##
-# Show Animated Splash for
-#
-# Image Will auto arrange into center horizontal&vertical
-#
-anisplash(
-  # Number of Loop
-  10,
-  
-  # Frame 1 [ Image, duration in millisecond ]
-  "splash/ani4", 10,
-  "splash/ani3", 10,
-  "splash/ani2", 10,
-  "splash/ani1", 10,
-  "splash/ani2", 10,
-  "splash/ani3", 10
-);
+if
+  getvar("splash") == "animated"
+then
+  ##
+  # Show Animated Splash for
+  #
+  # Image Will auto arrange into center horizontal&vertical
+  #
+  anisplash(
+    # Number of Loops
+    5,
+    
+    # Frame 1 [ Image, duration in millisecond ]
+    "splash/ani4", 50,
+    "splash/ani3", 50,
+    "splash/ani2", 50,
+    "splash/ani1", 50,
+    "splash/ani2", 50,
+    "splash/ani3", 50
+  );
+endif;
+
+if
+  getvar("splash") == "static"
+then
+  ##
+  # Show Splash for 4 seconds ( 1000 = 1 sec )
+  #   "sample" will read <aroma-assets>/"sample".png
+  #
+  # Image Will auto arrange into center horizontal&vertical
+  #
+  splash(4000, "splash");
+endif;
 
 ##
 # Rom information screen
@@ -162,21 +135,36 @@ if
   # Check if we're using the SGS4G
   file_getprop("/system/build.prop","ro.product.device") != "SGH-T959V"
 then
-  alert(
-    # Arg 1
+  # Check if the phone model exists in build.prop
+  setvar("current_device",file_getprop("/system/build.prop","ro.product.device"));
+  if
+  file_getprop("/system/build.prop","ro.product.device") == ""
+  then
+    # Since the file wasn't found we'll just say unknown
+    setvar("current_device","Unknown");
+  endif;
+  
+  if
+    confirm(
+      # Arg 1
       "Wrong Device!",
-    # Arg 2
+      # Arg 1
       "This ROM is only for the\n" +
-      "Galaxy S 4G (SGH-T959V).\n" +
+      "<#080>Galaxy S 4G (SGH-T959V).</#>\n\n" +
       "You are using the following device:\n" +
-      file_getprop("/system/build.prop","ro.product.device") + "\n" +
-      "Installation will now exit.",
-    # Arg 3
+      "<#080>" + getvar("current_device") + "</#>\n\n" +
+      "<#F00>Continuing with the installation may cause your phone to brick.</#>\n\n" +
+      "Would you like to continue?",
+      # Arg 1
       "icons/alert",
-    # Arg 4
-      "Exit Installation"
-  );
-  exit();
+      # Arg 1
+      "Yes",
+      # Arg 1
+      "No"
+    ) == "no"
+  then
+    exit();
+  endif;
 endif;
 
 if
@@ -206,16 +194,16 @@ viewbox(
     "Filesystem Information",
   # Arg 2
     "/system free space:\n" +
-    getdiskfree("/system","m") + "/" + getdisksize("/system","m") + "mB (" + getdiskusedpercent("/system") + "% used)" +
+    getdiskfree("/system","m") + "/" + getdisksize("/system","m") + "MB (" + getdiskusedpercent("/system") + "% used)" +
     "\n\n" +
     "/cache free space:\n" +
-    getdiskfree("/cache","m")  + "/" + getdisksize("/cache","m")  + "mB (" + getdiskusedpercent("/cache")  + "% used)" +
+    getdiskfree("/cache","m")  + "/" + getdisksize("/cache","m")  + "MB (" + getdiskusedpercent("/cache")  + "% used)" +
     "\n\n" +
     "/data free space:\n" +
-    getdiskfree("/data","m")   + "/" + getdisksize("/data","m")   + "mB (" + getdiskusedpercent("/data")   + "% used)" +
+    getdiskfree("/data","m")   + "/" + getdisksize("/data","m")   + "MB (" + getdiskusedpercent("/data")   + "% used)" +
     "\n\n" +
     # "/sdcard free space:\n" +
-    # getdiskfree("/sdcard","g") + "/" + getdisksize("/sdcard","g") + "gB (" + getdiskusedpercent("/sdcard") + "% used)" +
+    # getdiskfree("/sdcard","m") + "/" + getdisksize("/sdcard","m") + "MB (" + getdiskusedpercent("/sdcard") + "% used)" +
     # "\n\n" +
     "",
   # Arg 3
@@ -288,7 +276,7 @@ then
       "Backup Options","",2,
         # Item 1.1
         "Backup /data partition",
-          "Makes a backup of your whole /data partition (for your apps and settings).",1,
+          "Makes a backup of your whole /data partition (apps and settings).",1,
       # Group 2
       "Modem and Kernel","",2,
         # Item 2.1
@@ -328,6 +316,7 @@ endif;
 #
 writetmpfile(
   "options.prop",
+  "option_install_type=" + getvar("option_install_type") + "\n" +
   "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
   "option_install_modem=" + getvar("option_install_modem") + "\n" +
   "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
@@ -336,13 +325,13 @@ writetmpfile(
   "\n"
 );
 
-# install(
-  # "Installing",
-  # getvar("rom_name") + "\n" +
-  # "Please wait until the install completes." +
-  # "",
-  # "icons/install"
-# );
+install(
+  "Installing",
+  getvar("rom_name") + "\n" +
+  "Please wait until the install completes." +
+  "",
+  "icons/install"
+);
 
 ini_set("text_next", "Finish");
 
