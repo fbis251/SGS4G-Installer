@@ -13,14 +13,14 @@ run_program("/sbin/mount", "/dev/block/stl10 /data");
 run_program("/sbin/mount", "/dev/block/stl11 /cache");
 
 show_progress(0.0, 0);
-ui_print("@ Copying files required to format");
+ui_print("@ Copying required files");
 package_extract_file("tools/fsck.ext4", "/tmp/fsck.ext4");
 package_extract_file("tools/tune2fs.ext4", "/tmp/tune2fs.ext4");
 package_extract_file("tools/mkfs.ext4", "/tmp/mkfs.ext4");
-package_extract_file("etc/mke2fs.conf", "/etc/mke2fs.conf");
+package_extract_file("tools/mke2fs.conf", "/etc/mke2fs.conf");
 package_extract_file("tools/data-backup", "/tmp/data-backup");
 package_extract_file("tools/data-restore", "/tmp/data-restore");
-package_extract_file("/system/xbin/busybox", "/tmp/busybox");
+package_extract_file("system/xbin/busybox", "/tmp/busybox");
 set_perm(0, 0, 0755, "/tmp/mkfs.ext4");
 set_perm(0, 0, 0755, "/tmp/fsck.ext4");
 set_perm(0, 0, 0755, "/tmp/tune2fs.ext4");
@@ -207,12 +207,9 @@ then
   run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
 endif;
   set_progress(0.75);
-if
-  file_getprop("/tmp/aroma-data/options.prop","option_install_busybox") == "1"
-then
-  ui_print("@ Installing busybox");
-  run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
-endif;
+
+ui_print("@ Installing busybox");
+run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
 set_progress(0.8);
 
 if

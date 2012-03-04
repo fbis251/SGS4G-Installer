@@ -34,9 +34,7 @@ setvar("option_install_type",     1);
 setvar("option_do_data_backup",   0);
 setvar("option_install_modem",    1);
 setvar("option_install_kernel",   1);
-setvar("option_install_busybox",  1);
 setvar("option_reboot_phone",     1);
-setvar("option_do_not_do_backup", 0); # Forced disable of /data backup when not enough free space.
 
 ##
 # SET THEME
@@ -166,37 +164,6 @@ then
   );
   exit();
 endif;
-
-if
-  # Check to see if we have enough free space on /sdcard for a data backup
-  cmp(getdisksize("/data", "m"), ">",getdiskfree("/sdcard", "m"))
-then
-  if
-    confirm(
-      # Arg 1
-      "Not enough space",
-      # Arg 2
-			"You do not have enough space on your SD card to make a backup\n" +
-			"Space Available: <b><#selectbg_g>"+getdiskfree("/sdcard", "m")+" MB</#></b>\n"+
-			"Space Required : <b><#selectbg_g>"+getdisksize("/data", "m")  +" MB</#></b>\n\n"+
-      
-			"Even if you select the data backup option in Customized Install, no " +
-			"backup will be made. If you haven't already made a Titanium or " +
-			"nandroid backup your data will be lost!\n" +
-      "Would you like to continue?",
-      # Arg 3
-      "icons/alert",
-      # Arg 4
-      "Yes",
-      # Arg 5
-      "No"
-    ) == "no"
-  then
-    exit();
-  else
-    setvar("option_do_not_do_backup", "1");
-  endif;
-endif;
     
 agreebox(
   # Arg 1
@@ -250,38 +217,57 @@ then
     #   2 = Item Group Title ( the subtitle won't be used )
     #
       # Group 1
-      "Backup Options", "",2,
+      "Backup Options", "", 2,
         # Item 1.1
         "Backup /data partition",
           "Makes a backup of your whole /data partition (apps and settings).",1,
       # Group 2
-      "Modem and Kernel", "",2,
+      "Modem and Kernel", "", 2,
         # Item 2.1
         "Install Modem",
           "Samsung Galaxy S 4G KJ6 Modem.", 1,
         # Item 2.2
         "Install Kernel",
-          "bhundven's SMS-KJ6 Kernel.",1,
-      # Group 3
-      "Other customizations", "",2,
-        # Item 3.1
-        "Install busybox",
-          "(Recommended) Used by many command-line programs.", 1
+          "bhundven's SMS-KJ6 Kernel.", 1
   );
   
   # Now we set the customized variables.
-  setvar("option_do_data_backup",  prop("customized.prop", "item.1.1"));
-  setvar("option_install_modem",   prop("customized.prop", "item.2.1"));
-  setvar("option_install_kernel",  prop("customized.prop", "item.2.2"));
-  setvar("option_install_busybox", prop("customized.prop", "item.3.1"));
+  setvar("option_do_data_backup", prop("customized.prop", "item.1.1"));
+  setvar("option_install_modem",  prop("customized.prop", "item.2.1"));
+  setvar("option_install_kernel", prop("customized.prop", "item.2.2"));
 endif;
 
-# Check if we need to disable the data backup here
 if
-  getvar("option_do_not_do_backup") == "1"
+  # Check to see if we have enough free space on /sdcard for a data backup
+  (getvar("option_do_data_backup") &&
+   cmp(getdisksize("/data", "m"), ">",getdiskfree("/sdcard", "m")))
 then
-  # Not enough free space to do the backup, so we disable it.
-  setvar("option_do_data_backup", 0);
+  if
+    confirm(
+      # Arg 1
+      "Not enough space",
+      # Arg 2
+			"You do not have enough space on your SD card to make a backup\n" +
+			"Space Available: <b><#selectbg_g>"+getdiskfree("/sdcard", "m")+" MB</#></b>\n"+
+			"Space Required : <b><#selectbg_g>"+getdisksize("/data", "m")  +" MB</#></b>\n\n"+
+      
+			"Even if you selected the data backup option in Customized Install, no " +
+			"backup will be made. If you haven't already made a Titanium or " +
+			"nandroid backup your data will be lost!\n" +
+      "Would you like to continue?",
+      # Arg 3
+      "icons/alert",
+      # Arg 4
+      "Yes",
+      # Arg 5
+      "No"
+    ) == "no"
+  then
+    exit();
+  else
+    # Not enough free space to do the backup, so we disable it.
+    setvar("option_do_data_backup", 0);
+  endif;
 endif;
 
 # Do we want to reboot the phone after install?
@@ -302,12 +288,11 @@ endif;
 #
 writetmpfile(
   "options.prop",
-  "option_install_type="    + getvar("option_install_type")    + "\n" +
-  "option_do_data_backup="  + getvar("option_do_data_backup")  + "\n" +
-  "option_install_modem="   + getvar("option_install_modem")   + "\n" +
-  "option_install_kernel="  + getvar("option_install_kernel")  + "\n" +
-  "option_install_busybox=" + getvar("option_install_busybox") + "\n" +
-  "option_reboot_phone="    + getvar("option_reboot_phone")    + "\n" +
+  "option_install_type="   + getvar("option_install_type")    + "\n" +
+  "option_do_data_backup=" + getvar("option_do_data_backup")  + "\n" +
+  "option_install_modem="  + getvar("option_install_modem")   + "\n" +
+  "option_install_kernel=" + getvar("option_install_kernel")  + "\n" +
+  "option_reboot_phone="   + getvar("option_reboot_phone")    + "\n" +
   "\n"
 );
 
@@ -325,7 +310,7 @@ viewbox(
   "Installation Completed",
     "<b><#selectbg_g>Congratulations!</#></b>\n\n" +
     getvar("rom_name") + " has successfully installed.\n" +
-    "Select Finish to exit the installation.",
+    "Select Finish to exit.",
   "icons/info"
 );
 

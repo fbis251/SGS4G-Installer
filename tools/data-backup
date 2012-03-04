@@ -26,12 +26,13 @@
 datadir=/data
 PATH=/tmp:/sbin:$PATH
 BB=/tmp/busybox
-backfile=/sdcard/bonsai-backup/backup-data.cpio.gz
+backup_dir=/sdcard/aroma-backup
+backfile=$backup_dir/backup-data.cpio
 excludes='-path /data/dalvik-cache -prune -path /data/lost+found -prune -o'
 
 if $BB test -d $datadir; then
-  $BB test ! -d /sdcard/bonsai-backup && $BB mkdir /sdcard/bonsai-backup
-  $BB find $datadir $excludes -print | $BB cpio -omu -H newc | $BB gzip > $backfile
+  $BB test ! -d $backup_dir && $BB mkdir $backup_dir
+  $BB find $datadir $excludes -print | $BB cpio -omu -H newc > $backfile
 
   if $BB test $? -ne 0; then
     echo "Bonsai Install: backup failed"
