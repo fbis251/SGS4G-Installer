@@ -6,27 +6,37 @@
 ##
 # Configure the variables
 #
-setvar("rom_name",resprop("rom.prop","rom_name"));
-setvar("rom_version",resprop("rom.prop","rom_version"));
-setvar("rom_author",resprop("rom.prop","rom_author"));
-setvar("rom_device",resprop("rom.prop","rom_device"));
-setvar("rom_date",resprop("rom.prop","rom_date"));
-setvar("rom_packager",resprop("rom.prop","rom_packager"));
+setvar("rom_name",     resprop("rom.prop", "rom_name"));
+setvar("rom_version",  resprop("rom.prop", "rom_version"));
+setvar("rom_author",   resprop("rom.prop", "rom_author"));
+setvar("rom_device",   resprop("rom.prop", "rom_device"));
+setvar("rom_date",     resprop("rom.prop", "rom_date"));
+setvar("rom_packager", resprop("rom.prop", "rom_packager"));
 
 ##
-# Splash screen (animated or static)
+# Splash screen
 #
-setvar("splash", "static");
+splash(4000, "splash");
+
+##
+# Tasks to run before the installer starts
+#
+# Mount all the mount points. We can manipulate the filesystem before the install.
+#
+run_program("/sbin/mount", "/dev/block/stl9 /system");
+run_program("/sbin/mount", "/dev/block/stl10 /data");
+run_program("/sbin/mount", "/dev/block/mmcblk0p1 /sdcard");
 
 ##
 # Default installation options
 #
-setvar("option_install_type",1);
-setvar("option_do_data_backup",0);
-setvar("option_install_modem",1);
-setvar("option_install_kernel",1);
-setvar("option_install_busybox",1);
-setvar("option_reboot_phone",1);
+setvar("option_install_type",     1);
+setvar("option_do_data_backup",   0);
+setvar("option_install_modem",    1);
+setvar("option_install_kernel",   1);
+setvar("option_install_busybox",  1);
+setvar("option_reboot_phone",     1);
+setvar("option_do_not_do_backup", 0); # Forced disable of /data backup when not enough free space.
 
 ##
 # SET THEME
@@ -38,16 +48,15 @@ theme("ics");
 ##
 # Files
 #
-setvar("file_agreement",       readfile_aroma("agreement.txt"));
-setvar("file_changelog",       readfile_aroma("changelog.txt"));
+setvar("file_agreement", readfile_aroma("agreement.txt"));
 
 ##
 # Set up variables
 #
-ini_set("rom_name",             getvar("rom_name"));
-ini_set("rom_version",          getvar("rom_version"));
-ini_set("rom_author",           getvar("rom_author"));
-ini_set("rom_device",           getvar("rom_device"));
+ini_set("rom_name",    getvar("rom_name"));
+ini_set("rom_version", getvar("rom_version"));
+ini_set("rom_author",  getvar("rom_author"));
+ini_set("rom_device",  getvar("rom_device"));
 
 ##
 # Calibrate Touchscreen
@@ -60,51 +69,7 @@ ini_set("rom_device",           getvar("rom_device"));
 # ( green ), replace this calibrate() function with that data.
 #
 # These are the defaults for the SGS4G
-calibrate("0.8809","26","0.9507","19");
-
-##
-# Tasks to run before the installer starts
-#
-# Mount all the mount points. We can manipulate the filesystem before the install.
-#
-run_program("/sbin/mount", "/dev/block/stl9 /system");
-run_program("/sbin/mount", "/dev/block/stl10 /data");
-run_program("/sbin/mount", "/dev/block/stl11 /cache");
-run_program("/sbin/mount", "/dev/block/mmcblk0p1 /sdcard");
-
-if
-  getvar("splash") == "animated"
-then
-  ##
-  # Show Animated Splash for
-  #
-  # Image Will auto arrange into center horizontal&vertical
-  #
-  anisplash(
-    # Number of Loops
-    5,
-    
-    # Frame 1 [ Image, duration in millisecond ]
-    "splash/ani4", 50,
-    "splash/ani3", 50,
-    "splash/ani2", 50,
-    "splash/ani1", 50,
-    "splash/ani2", 50,
-    "splash/ani3", 50
-  );
-endif;
-
-if
-  getvar("splash") == "static"
-then
-  ##
-  # Show Splash for 4 seconds ( 1000 = 1 sec )
-  #   "sample" will read <aroma-assets>/"sample".png
-  #
-  # Image Will auto arrange into center horizontal&vertical
-  #
-  splash(4000, "splash");
-endif;
+calibrate("0.88558", "42", "0.9346", "22", "yes");
 
 ##
 # Rom information screen
@@ -113,19 +78,27 @@ viewbox(
   # Arg 1
     "Welcome",
   # Arg 2
-    "You are about to install:\n" +
-    "<#080>"+getvar("rom_name") + "</#>\n\n"+
-    "Created By:\n" +
-    "<#080>"+getvar("rom_author") + "</#>\n\n"+
-    "Designed for:\n" +
-    "<#080>"+getvar("rom_device") + "</#>\n\n"+
-    "Version:\n"+
-    "<#080>"+getvar("rom_version")+"</#>\n\n"+
-    "Updated:\n"+
-    "<#080>"+getvar("rom_date")+"</#>\n\n"+
-    "Installer By:\n"+
-    "<#080>"+getvar("rom_packager")+"</#>\n\n\n"+
-    "Select Next to continue."+
+    "<b>ROM information</b>\n" +
+		"Name:      <b><#selectbg_g>" + getvar("rom_name")     + "</#></b>\n"+
+    "Author:    <b><#selectbg_g>" + getvar("rom_author")   + "</#></b>\n"+
+    "Version:   <b><#selectbg_g>" + getvar("rom_version")  + "</#></b>\n"+
+    "Phone:     <b><#selectbg_g>" + getvar("rom_device")   + "</#></b>\n"+
+    "Updated:   <b><#selectbg_g>" + getvar("rom_date")     + "</#></b>\n"+
+    "Installer: <b><#selectbg_g>" + getvar("rom_packager") + "</#></b>\n\n"+
+    
+    "<b>Phone information</b>\n" +
+		"Manufacturer: <b><#selectbg_g>" + file_getprop("/system/build.prop", "ro.product.manufacturer") + "</#></b>\n" +
+		"Model:        <b><#selectbg_g>" + file_getprop("/system/build.prop", "ro.product.model") + "</#></b>\n\n" +
+    
+    "<b>Filesystem information</b>\n" +
+    "System Size: <b><#selectbg_g>" + getdisksize("/system", "m") + " MB</#></b>\n" +
+    "       Free: <b><#selectbg_g>" + getdiskfree("/system", "m") + " MB</#></b>\n" +
+    "Data   Size: <b><#selectbg_g>" + getdisksize("/data", "m")   + " MB</#></b>\n" +
+    "       Free: <b><#selectbg_g>" + getdiskfree("/data", "m")   + " MB</#></b>\n" +
+    "SDCard Size: <b><#selectbg_g>" + getdisksize("/sdcard", "m") + " MB</#></b>\n" +
+    "       Free: <b><#selectbg_g>" + getdiskfree("/sdcard", "m") + " MB</#></b>\n\n" +
+    
+    "<b>Select Next to continue.</b>"+
     "",
   # Arg 3
     "icons/info"
@@ -133,33 +106,38 @@ viewbox(
 
 if
   # Check if we're using the SGS4G
-  file_getprop("/system/build.prop","ro.product.device") != "SGH-T959V"
+  file_getprop("/system/build.prop", "ro.product.device") != "SGH-T959V"
 then
   # Check if the phone model exists in build.prop
-  setvar("current_device",file_getprop("/system/build.prop","ro.product.device"));
+  setvar("current_device",file_getprop("/system/build.prop", "ro.product.device"));
   if
-  file_getprop("/system/build.prop","ro.product.device") == ""
+  file_getprop("/system/build.prop", "ro.product.device") == ""
   then
     # Since the file wasn't found we'll just say unknown
-    setvar("current_device","Unknown");
+    setvar("current_device", "Unknown");
   endif;
   
   if
     confirm(
       # Arg 1
-      "Wrong Device!",
-      # Arg 1
+      "Unknown Device!",
+      # Arg 2
       "This ROM is only for the\n" +
-      "<#080>Galaxy S 4G (SGH-T959V).</#>\n\n" +
+      "<b><#selectbg_g>Galaxy S 4G (SGH-T959V).</#></b>\n\n" +
+      
       "You are using the following device:\n" +
-      "<#080>" + getvar("current_device") + "</#>\n\n" +
+      "<b><#selectbg_g>" +
+      getvar("current_device") +
+      "</#></b>\n\n" +
+      
       "<#F00>Continuing with the installation may cause your phone to brick.</#>\n\n" +
+      
       "Would you like to continue?",
-      # Arg 1
+      # Arg 3
       "icons/alert",
-      # Arg 1
+      # Arg 4
       "Yes",
-      # Arg 1
+      # Arg 5
       "No"
     ) == "no"
   then
@@ -171,7 +149,7 @@ if
   # This is where we check if the user is on a version we don't want.
   # If this is a Gingerbread ROM, the user has Froyo bootloaders so our ROM
   # won't work correctly.
-  file_getprop("/system/build.prop","ro.build.id") == "FROYO"
+  file_getprop("/system/build.prop", "ro.build.id") == "FROYO"
 then
   alert(
     # Arg 1
@@ -189,27 +167,37 @@ then
   exit();
 endif;
 
-viewbox(
-  # Arg 1
-    "Filesystem Information",
-  # Arg 2
-    "/system free space:\n" +
-    getdiskfree("/system","m") + "/" + getdisksize("/system","m") + "MB (" + getdiskusedpercent("/system") + "% used)" +
-    "\n\n" +
-    "/cache free space:\n" +
-    getdiskfree("/cache","m")  + "/" + getdisksize("/cache","m")  + "MB (" + getdiskusedpercent("/cache")  + "% used)" +
-    "\n\n" +
-    "/data free space:\n" +
-    getdiskfree("/data","m")   + "/" + getdisksize("/data","m")   + "MB (" + getdiskusedpercent("/data")   + "% used)" +
-    "\n\n" +
-    # "/sdcard free space:\n" +
-    # getdiskfree("/sdcard","m") + "/" + getdisksize("/sdcard","m") + "MB (" + getdiskusedpercent("/sdcard") + "% used)" +
-    # "\n\n" +
-    "",
-  # Arg 3
-    "icons/info"
-);
-
+if
+  # Check to see if we have enough free space on /sdcard for a data backup
+  cmp(getdisksize("/data", "m"), ">",getdiskfree("/sdcard", "m"))
+then
+  if
+    confirm(
+      # Arg 1
+      "Not enough space",
+      # Arg 2
+			"You do not have enough space on your SD card to make a backup\n" +
+			"Space Available: <b><#selectbg_g>"+getdiskfree("/sdcard", "m")+" MB</#></b>\n"+
+			"Space Required : <b><#selectbg_g>"+getdisksize("/data", "m")  +" MB</#></b>\n\n"+
+      
+			"Even if you select the data backup option in Customized Install, no " +
+			"backup will be made. If you haven't already made a Titanium or " +
+			"nandroid backup your data will be lost!\n" +
+      "Would you like to continue?",
+      # Arg 3
+      "icons/alert",
+      # Arg 4
+      "Yes",
+      # Arg 5
+      "No"
+    ) == "no"
+  then
+    exit();
+  else
+    setvar("option_do_not_do_backup", "1");
+  endif;
+endif;
+    
 agreebox(
   # Arg 1
     "Terms Of Use",
@@ -225,17 +213,6 @@ agreebox(
     "Please agree to the Terms of Use to continue with the installation."
 );
 
-textbox(
-  # Arg 1
-    "Changelog",
-  # Arg 2
-  getvar("rom_name"),
-  # Arg 3
-    "icons/info",
-  # Arg 4
-    getvar("file_changelog");
-);
-
 menubox(
   # Title
     "Install Type",
@@ -247,11 +224,11 @@ menubox(
     "install_type.prop",
   # Items ( per 3 arguments ): Title, Subtitle/description, Icon
     # Item 1
-    "Quick",    "Install default recommended packages into your phone.", "icons/install",
+    "Quick",      "Install default recommended packages into your phone.", "icons/install",
     # Item 2
-    "Customized",  "Choose what you would like installed on your phone.", "icons/apps"
+    "Customized", "Choose what you would like installed on your phone.", "icons/apps"
 );
-setvar("option_install_type", prop("install_type.prop","selected"));
+setvar("option_install_type", prop("install_type.prop", "selected"));
 
 if
   # User chose customized installation
@@ -273,12 +250,12 @@ then
     #   2 = Item Group Title ( the subtitle won't be used )
     #
       # Group 1
-      "Backup Options","",2,
+      "Backup Options", "",2,
         # Item 1.1
         "Backup /data partition",
           "Makes a backup of your whole /data partition (apps and settings).",1,
       # Group 2
-      "Modem and Kernel","",2,
+      "Modem and Kernel", "",2,
         # Item 2.1
         "Install Modem",
           "Samsung Galaxy S 4G KJ6 Modem.", 1,
@@ -286,19 +263,28 @@ then
         "Install Kernel",
           "bhundven's SMS-KJ6 Kernel.",1,
       # Group 3
-      "Other customizations","",2,
+      "Other customizations", "",2,
         # Item 3.1
         "Install busybox",
           "(Recommended) Used by many command-line programs.", 1
   );
   
   # Now we set the customized variables.
-  setvar("option_do_data_backup",prop("customized.prop","item.1.1"));
-  setvar("option_install_modem",prop("customized.prop","item.2.1"));
-  setvar("option_install_kernel",prop("customized.prop","item.2.2"));
-  setvar("option_install_busybox",prop("customized.prop","item.3.1"));
+  setvar("option_do_data_backup",  prop("customized.prop", "item.1.1"));
+  setvar("option_install_modem",   prop("customized.prop", "item.2.1"));
+  setvar("option_install_kernel",  prop("customized.prop", "item.2.2"));
+  setvar("option_install_busybox", prop("customized.prop", "item.3.1"));
 endif;
 
+# Check if we need to disable the data backup here
+if
+  getvar("option_do_not_do_backup") == "1"
+then
+  # Not enough free space to do the backup, so we disable it.
+  setvar("option_do_data_backup", 0);
+endif;
+
+# Do we want to reboot the phone after install?
 if
   confirm(
     "Reboot phone?",
@@ -308,7 +294,7 @@ if
     "No"
   ) == "no"
 then
-  setvar("option_reboot_phone","0");
+  setvar("option_reboot_phone", "0");
 endif;
 
 ##
@@ -316,12 +302,12 @@ endif;
 #
 writetmpfile(
   "options.prop",
-  "option_install_type=" + getvar("option_install_type") + "\n" +
-  "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
-  "option_install_modem=" + getvar("option_install_modem") + "\n" +
-  "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
+  "option_install_type="    + getvar("option_install_type")    + "\n" +
+  "option_do_data_backup="  + getvar("option_do_data_backup")  + "\n" +
+  "option_install_modem="   + getvar("option_install_modem")   + "\n" +
+  "option_install_kernel="  + getvar("option_install_kernel")  + "\n" +
   "option_install_busybox=" + getvar("option_install_busybox") + "\n" +
-  "option_reboot_phone=" + getvar("option_reboot_phone") + "\n" +
+  "option_reboot_phone="    + getvar("option_reboot_phone")    + "\n" +
   "\n"
 );
 
@@ -337,8 +323,14 @@ ini_set("text_next", "Finish");
 
 viewbox(
   "Installation Completed",
-    "<#080>Congratulations!</#>\n\n"+
-    getvar("rom_name")+ " has successfully installed.\n"+
+    "<b><#selectbg_g>Congratulations!</#></b>\n\n" +
+    getvar("rom_name") + " has successfully installed.\n" +
     "Select Finish to exit the installation.",
   "icons/info"
 );
+
+if
+  file_getprop("/tmp/aroma-data/options.prop", "option_reboot_phone") == "1"
+then
+  reboot("onfinish");
+endif;

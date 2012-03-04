@@ -1,5 +1,6 @@
-We need a team acid logo (for splash).
-Check sdcard free space for data backup, add warning if not enough space before script runs. (there's a bug for this, need to contact installer dev)
+Use busybox rm -rf /dir/* & cp -rf to copy files and overwrite in updater-scripts.
+  http://forum.xda-developers.com/showpost.php?p=22796132&postcount=290
+  
 
 Customizations
   Wallpapers
@@ -26,3 +27,9 @@ New Aroma Update
     Should help with backups and calculating partition sizes
 Take out wipes and use bonsai's data backup/restore
   Change to tar instead of cpio (not needed, cpio saves a LOT of space)
+Enable journaling on /data?
+  It's just a performance loss with no real benefit for this phone
+We need a team acid logo (for splash).
+  Got one :D
+Check sdcard free space for data backup, add warning if not enough space before script runs. (there's a bug for this, need to contact installer dev)
+  Bug got fixed and now we have a warning.
