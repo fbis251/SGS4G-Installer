@@ -1,0 +1,31 @@
+#!/tmp/busybox sh
+## Performs backup of the efs partition
+set -x
+
+PATH=/tmp:/sbin:$PATH
+BB=/tmp/busybox
+backup_dir=/sdcard/aroma-backup
+efs_device=/dev/block/stl3
+efs_backfile=$backup_dir/efs-`$BB date +"%m-%d-%y--%H-%M"`.tar
+tmp_backfile=efs
+
+if $BB test -d $datadir; then
+  $BB test ! -d $backup_dir && $BB mkdir $backup_dir
+  
+  cd /tmp/
+  echo 'Backing up efs'
+  $BB dd if=$efs_device of=$tmp_backfile && \
+  $BB tar cf $efs_backfile $tmp_backfile && \
+  $BB md5sum -t $efs_backfile >> $efs_backfile && \
+  $BB mv $efs_backfile $efs_backfile.md5 && \
+  $BB rm $tmp_backfile
+  
+  if $BB test $? -ne 0; then
+    echo "efs backup failed"
+    exit 1
+  else
+    echo "efs backup completed"
+  fi
+  exit 0
+fi
+

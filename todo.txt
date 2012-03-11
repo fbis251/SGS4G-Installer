@@ -1,6 +1,14 @@
 Use busybox rm -rf /dir/* & cp -rf to copy files and overwrite in updater-scripts.
   http://forum.xda-developers.com/showpost.php?p=22796132&postcount=290
+Integrate persistent data options
+  Delete backup option
+  How many backups to hold in the directory
+  So it creates a folder bonsai-backup then puts the backup info in there as cpio. When you flash another ROM that uses the installer since the file is already there can we just have it use that file instead of creating a new one?
+Integrate inline if support
+  iff function
+zipalign /data on data restore
 
+  
 Customizations
   Wallpapers
   Launchers

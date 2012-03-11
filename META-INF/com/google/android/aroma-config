@@ -14,6 +14,11 @@ setvar("rom_date",     resprop("rom.prop", "rom_date"));
 setvar("rom_packager", resprop("rom.prop", "rom_packager"));
 
 ##
+# Aroma variables
+#
+setvar("font_location" , "rom"); # Load font from the rom or from aroma
+
+##
 # Splash screen
 #
 splash(4000, "splash");
@@ -42,6 +47,25 @@ setvar("option_reboot_phone",     1);
 # Look under aroma/themes/ for theme files
 #
 theme("ics");
+
+##
+# Set fonts
+#
+# Do we want to reboot the phone after install?
+if
+  getvar("font_location") == "rom"
+then
+  # We're loading the font from the ROM directory
+  setvar(font_path, "system/fonts/DroidSans.ttf");
+  fontload( "0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
+  fontload( "1", getvar(font_path), "18" ); #-- "1" = Big Font
+else
+  # We'll use aroma's font
+  setvar(font_path, "ttf/Roboto-Regular.ttf");
+  fontresload( "0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
+  fontresload( "1", getvar(font_path), "18" ); #-- "1" = Big Font
+endif;
+
 
 ##
 # Files
@@ -76,27 +100,28 @@ viewbox(
   # Arg 1
     "Welcome",
   # Arg 2
-    "<b>ROM information</b>\n" +
-		"Name:      <b><#selectbg_g>" + getvar("rom_name")     + "</#></b>\n"+
-    "Author:    <b><#selectbg_g>" + getvar("rom_author")   + "</#></b>\n"+
-    "Version:   <b><#selectbg_g>" + getvar("rom_version")  + "</#></b>\n"+
-    "Phone:     <b><#selectbg_g>" + getvar("rom_device")   + "</#></b>\n"+
-    "Updated:   <b><#selectbg_g>" + getvar("rom_date")     + "</#></b>\n"+
-    "Installer: <b><#selectbg_g>" + getvar("rom_packager") + "</#></b>\n\n"+
+    "<@center>" +
+    "<b>"    +
+		"<#selectbg_g>" + getvar("rom_name")     + "</#>\n" +
+    "<#selectbg_g>" + getvar("rom_version")  + "</#>\n" +
+    "</b>\n" +
     
-    "<b>Phone information</b>\n" +
-		"Manufacturer: <b><#selectbg_g>" + file_getprop("/system/build.prop", "ro.product.manufacturer") + "</#></b>\n" +
-		"Model:        <b><#selectbg_g>" + file_getprop("/system/build.prop", "ro.product.model") + "</#></b>\n\n" +
+    "by\n\n"   +
     
-    "<b>Filesystem information</b>\n" +
-    "System Size: <b><#selectbg_g>" + getdisksize("/system", "m") + " MB</#></b>\n" +
-    "       Free: <b><#selectbg_g>" + getdiskfree("/system", "m") + " MB</#></b>\n" +
-    "Data   Size: <b><#selectbg_g>" + getdisksize("/data", "m")   + " MB</#></b>\n" +
-    "       Free: <b><#selectbg_g>" + getdiskfree("/data", "m")   + " MB</#></b>\n" +
-    "SDCard Size: <b><#selectbg_g>" + getdisksize("/sdcard", "m") + " MB</#></b>\n" +
-    "       Free: <b><#selectbg_g>" + getdiskfree("/sdcard", "m") + " MB</#></b>\n\n" +
+    "<b>"    +
+    "<#selectbg_g>" + getvar("rom_author")   + "</#>\n" +
+    "\n" +
     
-    "<b>Select Next to continue.</b>"+
+    "<#selectbg_g>" + getvar("rom_date")     + "</#>\n" +
+    "<#selectbg_g>" + getvar("rom_device")   + "</#>\n" +
+    "</b>\n" +
+
+    "AROMA Installer ported by\n" +
+    "<b>" +
+    "<#selectbg_g>" + getvar("rom_packager") + "</#>\n" +
+    "</b></@>\n\n"+
+    
+    "Select Next to continue." +
     "",
   # Arg 3
     "icons/info"
@@ -270,19 +295,6 @@ then
   endif;
 endif;
 
-# Do we want to reboot the phone after install?
-if
-  confirm(
-    "Reboot phone?",
-    "Would you like your phone to automatically reboot when the installation is done?\n",
-    "icons/info",
-    "Yes",
-    "No"
-  ) == "no"
-then
-  setvar("option_reboot_phone", "0");
-endif;
-
 ##
 # Now we write out all our install options
 #
@@ -314,8 +326,15 @@ viewbox(
   "icons/info"
 );
 
+# Do we want to reboot the phone after install?
 if
-  file_getprop("/tmp/aroma-data/options.prop", "option_reboot_phone") == "1"
+  confirm(
+    "Reboot phone?",
+    "Would you like to reboot your phone now?\n",
+    "icons/info",
+    "Yes",
+    "No"
+  ) == "yes"
 then
   reboot("onfinish");
 endif;
