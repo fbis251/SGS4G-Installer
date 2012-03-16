@@ -16,6 +16,8 @@ setvar("rom_packager", resprop("rom.prop", "rom_packager"));
 ##
 # Aroma variables
 #
+setvar("phone_model", "SGH-T959V");
+setvar("phone_name", "Samsung Galaxy S 4G");
 setvar("font_location" , "rom"); # Load font from the rom or from aroma
 
 ##
@@ -129,7 +131,7 @@ viewbox(
 
 if
   # Check if we're using the SGS4G
-  file_getprop("/system/build.prop", "ro.product.device") != "SGH-T959V"
+  file_getprop("/system/build.prop", "ro.product.device") != getvar("phone_model")
 then
   # Check if the phone model exists in build.prop
   setvar("current_device",file_getprop("/system/build.prop", "ro.product.device"));
@@ -146,7 +148,7 @@ then
       "Unknown Device!",
       # Arg 2
       "This ROM is only for the\n" +
-      "<b><#selectbg_g>Galaxy S 4G (SGH-T959V).</#></b>\n\n" +
+      "<b><#selectbg_g>" + getvar("phone_name") + " (" + getvar("phone_model") + ").</#></b>\n\n" +
       
       "You are using the following device:\n" +
       "<b><#selectbg_g>" +

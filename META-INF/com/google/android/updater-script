@@ -1,5 +1,5 @@
 if
-   file_getprop("/tmp/aroma-data/options.prop","option_install_type") == "1"
+   file_getprop("/tmp/aroma/options.prop","option_install_type") == "1"
 then
   ui_print("@Performing a quick install");
 else
@@ -36,10 +36,10 @@ set_progress(0.05);
 ui_print("@Backing up /efs");
 run_program("/tmp/efs-backup");
 ui_print(" Backup complete");
-set_progress(0.05);
+set_progress(0.1);
 
 if
-  file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
+  file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
   # Run the modified bonsai backup script
   ui_print("@Backing up /data");
@@ -48,7 +48,7 @@ then
   unmount("/data");
   unmount("/sdcard");
   ui_print(" Backup complete");
-  set_progress(0.1);
+  set_progress(0.15);
 endif;
 
 ui_print("@Formatting /system");
@@ -200,7 +200,7 @@ set_perm(0, 0, 755, "/tmp/updates/redbend_ua");
 set_progress(0.6);
 
 if
-  file_getprop("/tmp/aroma-data/options.prop","option_install_modem") == "1"
+  file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
 then
   ui_print("@Flashing modem");
   run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", "/dev/block/bml12");
@@ -208,26 +208,26 @@ endif;
 set_progress(0.7);
 
 if
-  file_getprop("/tmp/aroma-data/options.prop","option_install_kernel") == "1"
+  file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
 then
   ui_print("@Flashing kernel");
   run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
 endif;
-  set_progress(0.75);
+set_progress(0.75);
 
 ui_print("@Installing busybox");
 run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
 set_progress(0.8);
 
 if
-  file_getprop("/tmp/aroma-data/options.prop","option_do_data_backup") == "1"
+  file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
   ui_print("@Restoring applications and data");
   ui_print(" This may take a while");
   run_program("/tmp/data-restore");
   ui_print(" Restore completed");
-  set_progress(0.9);
 endif;
+set_progress(0.9);
 
 ui_print("@Unmounting partitions");
 run_program("/sbin/umount", "/system");
