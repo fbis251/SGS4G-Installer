@@ -130,7 +130,7 @@ viewbox(
 );
 
 if
-  # Check if we're using the SGS4G
+  # Check if we're using the correct phone_model
   file_getprop("/system/build.prop", "ro.product.device") != getvar("phone_model")
 then
   # Check if the phone model exists in build.prop
