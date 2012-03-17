@@ -18,7 +18,6 @@ setvar("rom_packager", resprop("rom.prop", "rom_packager"));
 #
 setvar("phone_model", "SGH-T959V");
 setvar("phone_name", "Samsung Galaxy S 4G");
-setvar("font_location" , "rom"); # Load font from the rom or from aroma
 
 ##
 # Splash screen
@@ -55,7 +54,8 @@ theme("ics");
 #
 # Do we want to reboot the phone after install?
 if
-  getvar("font_location") == "rom"
+  # Make sure that the zip file build.prop exists, which probably means that the font exists
+  zipprop("system/build.prop", "ro.product.device") != ""
 then
   # We're loading the font from the ROM directory
   setvar(font_path, "system/fonts/DroidSans.ttf");

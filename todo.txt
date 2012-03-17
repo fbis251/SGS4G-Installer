@@ -2,7 +2,6 @@ Add ability to check for Froyo/GB using a recovery prop file.
   Implement using a kernel version check?
     2.6.32.x = froyo
     2.6.35.x = gb
-
 Use busybox rm -rf /dir/* & cp -rf to copy files and overwrite in updater-scripts.
   http://forum.xda-developers.com/showpost.php?p=22796132&postcount=290
 Integrate persistent data options
@@ -46,3 +45,5 @@ We need a team acid logo (for splash).
 Check sdcard free space for data backup, add warning if not enough space before script runs. (there's a bug for this, need to contact installer dev)
   Bug got fixed and now we have a warning.
 Disable gzip after cpio in backups to speed the backup further
+Figure out how to implement a fallback to the default font in case the installer is being run without a ROM
+  zipprop for build.prop?
