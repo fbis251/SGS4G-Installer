@@ -8,7 +8,7 @@ Integrate inline if support
   iff function
 zipalign /data on data restore
 
-  
+
 Customizations
   Wallpapers
   Launchers

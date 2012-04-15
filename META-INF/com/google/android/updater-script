@@ -200,26 +200,6 @@ set_perm(0, 0, 755, "/tmp/updates/redbend_ua");
 set_progress(0.6);
 
 if
-  file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
-then
-  ui_print("@Flashing modem");
-  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", "/dev/block/bml12");
-endif;
-set_progress(0.7);
-
-if
-  file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
-then
-  ui_print("@Flashing kernel");
-  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
-endif;
-set_progress(0.75);
-
-ui_print("@Installing busybox");
-run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
-set_progress(0.8);
-
-if
   file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
   ui_print("@Restoring applications and data");
@@ -227,6 +207,26 @@ then
   run_program("/tmp/data-restore");
   ui_print(" Restore completed");
 endif;
+set_progress(0.7);
+
+if
+  file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
+then
+  ui_print("@Flashing modem");
+  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", "/dev/block/bml12");
+endif;
+set_progress(0.8);
+
+if
+  file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
+then
+  ui_print("@Flashing kernel");
+  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
+endif;
+set_progress(0.85);
+
+ui_print("@Installing busybox");
+run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
 set_progress(0.9);
 
 ui_print("@Unmounting partitions");
