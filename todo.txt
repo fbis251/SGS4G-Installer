@@ -1,7 +1,3 @@
-Add ability to check for Froyo/GB using a recovery prop file.
-  Implement using a kernel version check?
-    2.6.32.x = froyo
-    2.6.35.x = gb
 Use busybox rm -rf /dir/* & cp -rf to copy files and overwrite in updater-scripts.
   http://forum.xda-developers.com/showpost.php?p=22796132&postcount=290
 Integrate persistent data options
@@ -20,6 +16,11 @@ Customizations
   Different bootanimations?
   
 # DONE #
+Add ability to check for Froyo/GB using a recovery prop file.
+  Implement using a kernel version check?
+    uname -a | grep '2.6.35'
+    2.6.32.x = froyo
+    2.6.35.x = gb
 Check if we're currently on Froyo. If we are abort installation and inform the user that GB bootloaders are needed.
 	ro.build.id=GINGERBREAD
 Figure out if functions can be used for installation options. (No they can't...)

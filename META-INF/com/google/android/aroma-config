@@ -174,7 +174,8 @@ if
   # This is where we check if the user is on a version we don't want.
   # If this is a Gingerbread ROM, the user has Froyo bootloaders so our ROM
   # won't work correctly.
-  file_getprop("/system/build.prop", "ro.build.id") == "FROYO"
+  # Exit status 0 means GB, 1 means other (Froyo)
+  resexec("scripts/kernel_check.sh") != 0
 then
   alert(
     # Arg 1
@@ -266,7 +267,7 @@ endif;
 
 if
   # Check to see if we have enough free space on /sdcard for a data backup
-  (getvar("option_do_data_backup") &&
+  (getvar("option_do_data_backup") == "1" &&
    cmp(getdisksize("/data", "m"), ">",getdiskfree("/sdcard", "m")))
 then
   if
