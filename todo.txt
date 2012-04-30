@@ -7,7 +7,9 @@ Integrate persistent data options
 Integrate inline if support
   iff function
 zipalign /data on data restore
-
+Add a confirmation screen before the install begins
+  List all options the user has picked
+  List that you are/aren't doing a /data backup in bold letters
 
 Customizations
   Wallpapers
