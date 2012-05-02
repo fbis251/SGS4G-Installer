@@ -1,0 +1,20 @@
+# Standard ROM options
+rom_name=ROM Name
+rom_version=ROM Version
+rom_author=ROM Author
+rom_device=Samsung Galaxy S 4G
+rom_date=Jan 1, 1970
+
+# Mod information
+rom_modem=Samsung Galaxy S 4G KG4 Modem
+rom_kernel=SMS KJ6 v0.2.0 by bhundven
+
+# Phone model/information
+phone_model=SGH-T959V
+phone_name=Samsung Galaxy S 4G
+
+# Theme options
+aroma_theme=ics
+
+# Please leave this in ;)
+aroma_ported_by=Fernando Barillas (FBis251)

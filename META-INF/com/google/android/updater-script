@@ -236,4 +236,4 @@ run_program("/sbin/umount", "/cache");
 set_progress(1.0);
 show_progress(1.0, 0);
 
-ui_print("@Update complete");
+ui_print("@Done!");

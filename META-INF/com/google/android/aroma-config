@@ -4,70 +4,33 @@
 ###############################################################
 
 ##
+# AROMA prop filename
+#
+setvar("aroma_prop", "installer.prop");
+
+##
 # Configure the variables
 #
-setvar("rom_name",     resprop("rom.prop", "rom_name"));
-setvar("rom_version",  resprop("rom.prop", "rom_version"));
-setvar("rom_author",   resprop("rom.prop", "rom_author"));
-setvar("rom_device",   resprop("rom.prop", "rom_device"));
-setvar("rom_date",     resprop("rom.prop", "rom_date"));
-setvar("rom_packager", resprop("rom.prop", "rom_packager"));
+# Standard ROM options
+setvar("rom_name",        resprop(getvar("aroma_prop"), "rom_name"));
+setvar("rom_version",     resprop(getvar("aroma_prop"), "rom_version"));
+setvar("rom_author",      resprop(getvar("aroma_prop"), "rom_author"));
+setvar("rom_device",      resprop(getvar("aroma_prop"), "rom_device"));
+setvar("rom_date",        resprop(getvar("aroma_prop"), "rom_date"));
 
-##
-# Aroma variables
-#
-setvar("phone_model", "SGH-T959V");
-setvar("phone_name", "Samsung Galaxy S 4G");
+# Mod information
+setvar("rom_modem",       resprop(getvar("aroma_prop"), "rom_modem"));
+setvar("rom_kernel",      resprop(getvar("aroma_prop"), "rom_kernel"));
 
-##
-# Splash screen
-#
-splash(4000, "splash");
+# Phone model/information
+setvar("phone_model",     resprop(getvar("aroma_prop"), "phone_model"));
+setvar("phone_name",      resprop(getvar("aroma_prop"), "phone_name"));
 
-##
-# Tasks to run before the installer starts
-#
-# Mount all the mount points. We can manipulate the filesystem before the install.
-#
-run_program("/sbin/mount", "/dev/block/stl9 /system");
-run_program("/sbin/mount", "/dev/block/stl10 /data");
-run_program("/sbin/mount", "/dev/block/mmcblk0p1 /sdcard");
+# Theme options
+setvar("aroma_theme",     resprop(getvar("aroma_prop"), "aroma_theme"));
 
-##
-# Default installation options
-#
-setvar("option_install_type",     1);
-setvar("option_do_data_backup",   0);
-setvar("option_install_modem",    1);
-setvar("option_install_kernel",   1);
-setvar("option_reboot_phone",     1);
-
-##
-# SET THEME
-#
-# Look under aroma/themes/ for theme files
-#
-theme("ics");
-
-##
-# Set fonts
-#
-# Do we want to reboot the phone after install?
-if
-  # Make sure that the zip file build.prop exists, which probably means that the font exists
-  zipprop("system/build.prop", "ro.product.device") != ""
-then
-  # We're loading the font from the ROM directory
-  setvar(font_path, "system/fonts/DroidSans.ttf");
-  fontload( "0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
-  fontload( "1", getvar(font_path), "18" ); #-- "1" = Big Font
-else
-  # We'll use aroma's font
-  setvar(font_path, "ttf/Roboto-Regular.ttf");
-  fontresload( "0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
-  fontresload( "1", getvar(font_path), "18" ); #-- "1" = Big Font
-endif;
-
+# Please leave this in ;)
+setvar("aroma_ported_by", resprop(getvar("aroma_prop"), "aroma_ported_by"));
 
 ##
 # Files
@@ -96,6 +59,75 @@ ini_set("rom_device",  getvar("rom_device"));
 calibrate("0.88558", "42", "0.9346", "22", "yes");
 
 ##
+# Splash screen
+#
+splash(2500, "splash");
+
+##
+# Tasks to run before the installer starts
+#
+# Mount all the mount points. We can manipulate the filesystem before the install.
+#
+run_program("/sbin/mount", "/dev/block/stl9 /system");
+run_program("/sbin/mount", "/dev/block/stl10 /data");
+run_program("/sbin/mount", "/dev/block/mmcblk0p1 /sdcard");
+
+##
+# Default installation options
+#
+setvar("option_install_type",     1);
+setvar("option_do_data_backup",   0);
+setvar("option_install_modem",    1);
+setvar("option_install_kernel",   1);
+
+##
+# Set fonts
+#
+if
+  # Make sure that the zip file build.prop exists, which probably means that the font exists
+  zipprop("system/build.prop", "ro.product.device") != ""
+then
+  # We're loading the font from the ROM directory
+  setvar(font_path, "system/fonts/DroidSans.ttf");
+  fontload("0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
+  fontload("1", getvar(font_path), "18" ); #-- "1" = Big Font
+else
+  # We'll use aroma's font
+  setvar(font_path, "ttf/Roboto-Regular.ttf");
+  fontresload("0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
+  fontresload("1", getvar(font_path), "18" ); #-- "1" = Big Font
+endif;
+
+##
+# SET THEME
+#
+# Look under aroma/themes/ for theme files
+#
+theme(getvar("aroma_theme"));
+
+##
+# Check for the installer prop file
+#
+if
+  # Check to see if the file has been renamed (if it has the chef most likely edited it :D)
+  resprop(getvar("aroma_prop"), "rom_name") == ""
+then
+  # The prop file hasn't been renamed.
+  alert(
+    # Arg 1
+      getvar("aroma_prop") + " not found!",
+    # Arg 2
+      "Please make sure you edit the installer.default.prop file and rename it to " +
+      getvar("aroma_prop") + " before letting your users use this :D",
+    # Arg 3
+      "icons/alert",
+    # Arg 4
+      "Exit Installation"
+  );
+  exit();
+endif;
+
+##
 # Rom information screen
 #
 viewbox(
@@ -120,10 +152,10 @@ viewbox(
 
     "AROMA Installer ported by\n" +
     "<b>" +
-    "<#selectbg_g>" + getvar("rom_packager") + "</#>\n" +
+    "<#selectbg_g>" + getvar("aroma_ported_by") + "</#>\n" +
     "</b></@>\n\n"+
     
-    "Select Next to continue." +
+    "<@right>Select Next to continue.</@>" +
     "",
   # Arg 3
     "icons/info"
@@ -253,10 +285,10 @@ then
       "Modem and Kernel", "", 2,
         # Item 2.1
         "Install Modem",
-          "Samsung Galaxy S 4G KJ6 Modem.", 1,
+          getvar("rom_modem"), 1,
         # Item 2.2
         "Install Kernel",
-          "bhundven's SMS-KJ6 Kernel.", 1
+          getvar("rom_kernel"), 1
   );
   
   # Now we set the customized variables.
@@ -303,13 +335,52 @@ endif;
 #
 writetmpfile(
   "options.prop",
-  "option_install_type="   + getvar("option_install_type")    + "\n" +
-  "option_do_data_backup=" + getvar("option_do_data_backup")  + "\n" +
-  "option_install_modem="  + getvar("option_install_modem")   + "\n" +
-  "option_install_kernel=" + getvar("option_install_kernel")  + "\n" +
-  "option_reboot_phone="   + getvar("option_reboot_phone")    + "\n" +
+  "option_install_type="   + getvar("option_install_type")   + "\n" +
+  "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
+  "option_install_modem="  + getvar("option_install_modem")  + "\n" +
+  "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
   "\n"
 );
+
+##
+# Are you sure you want to continue with the selected options?
+#
+if
+  confirm(
+    "Install Options",
+    "You selected the following options:\n\n" +
+
+    # Installation type
+    iif(cmp(getvar("option_install_type"), "==", "1"), "Quick", "Customized") +
+    " Installation\n\n" +
+    
+    "Do /data backup\n" +
+    "<b><#selectbg_g>" +
+    iif(cmp(getvar("option_do_data_backup"), "==", "1"), "Yes", "No") +
+    "</#></b>\n" +
+    
+    "Install modem\n" +
+    "<b><#selectbg_g>" +
+    iif(cmp(getvar("option_install_modem"), "==", "1"), "Yes", "No") +
+    "</#></b>\n" +
+    
+    "Install kernel\n" +
+    "<b><#selectbg_g>" +
+    iif(cmp(getvar("option_install_kernel"), "==", "1"), "Yes", "No") +
+    "</#></b>\n" +
+    
+    "\n" +
+    "Begin the installation now?\n",
+    
+    "icons/info",
+    "Yes",
+    "Go back"
+  ) == "no"
+then
+  # We'll go back this number of screens. Conveniently, the install_type variable holds the number
+  # of screens we'd need to go back from this screen. Might need to hardcode this later though.
+  back(getvar("option_install_type"));
+endif;
 
 install(
   "Installing",
