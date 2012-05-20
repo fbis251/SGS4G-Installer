@@ -1,20 +1,18 @@
-Use busybox rm -rf /dir/* & cp -rf to copy files and overwrite in updater-scripts.
-  http://forum.xda-developers.com/showpost.php?p=22796132&postcount=290
 Integrate persistent data options
   Delete backup option
   How many backups to hold in the directory
   So it creates a folder bonsai-backup then puts the backup info in there as cpio. When you flash another ROM that uses the installer since the file is already there can we just have it use that file instead of creating a new one?
-Integrate inline if support
-  iff function
 zipalign /data on data restore
-
-
+Use dd to zero out bml12 when doing a modem flash.
+  Also do the same for a kernel flash
+  Looks like writing to bml block files using dd doesn't work.
 Customizations
   Wallpapers
   Launchers
   Bloatware
   Different bootanimations?
-  
+Add mounts.prop to hold mounts information for easier porting
+
 # DONE #
 Add ability to check for Froyo/GB using a recovery prop file.
   Implement using a kernel version check?
@@ -48,3 +46,9 @@ Check sdcard free space for data backup, add warning if not enough space before 
 Disable gzip after cpio in backups to speed the backup further
 Figure out how to implement a fallback to the default font in case the installer is being run without a ROM
   zipprop for build.prop?
+Integrate inline if support
+  iff function
+Use busybox rm -rf /dir/* & cp -rf to copy files and overwrite in updater-scripts.
+  http://forum.xda-developers.com/showpost.php?p=22796132&postcount=290
+Add colors to the install confirmation screen
+  red no, green yes

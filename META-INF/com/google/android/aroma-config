@@ -75,10 +75,10 @@ run_program("/sbin/mount", "/dev/block/mmcblk0p1 /sdcard");
 ##
 # Default installation options
 #
-setvar("option_install_type",     1);
-setvar("option_do_data_backup",   0);
-setvar("option_install_modem",    1);
-setvar("option_install_kernel",   1);
+setvar("option_install_type",   1);
+setvar("option_do_data_backup", 0);
+setvar("option_install_modem",  1);
+setvar("option_install_kernel", 1);
 
 ##
 # Set fonts
@@ -117,8 +117,9 @@ then
     # Arg 1
       getvar("aroma_prop") + " not found!",
     # Arg 2
-      "Please make sure you edit the installer.default.prop file and rename it to " +
-      getvar("aroma_prop") + " before letting your users use this :D",
+      "If you are a rom dev, make sure you edit installer.default.prop located in the aroma " +
+      "directory, and rename it to " + getvar("aroma_prop") + " before releasing your ROM.\n" +
+      "If you are not a ROM dev, you shouldn't be flashing this.",
     # Arg 3
       "icons/alert",
     # Arg 4
@@ -135,14 +136,14 @@ viewbox(
     "Welcome",
   # Arg 2
     "<@center>" +
-    "<b>"    +
+    "<b>" +
 		"<#selectbg_g>" + getvar("rom_name")     + "</#>\n" +
     "<#selectbg_g>" + getvar("rom_version")  + "</#>\n" +
     "</b>\n" +
     
-    "by\n\n"   +
+    "by\n\n" +
     
-    "<b>"    +
+    "<b>" +
     "<#selectbg_g>" + getvar("rom_author")   + "</#>\n" +
     "\n" +
     
@@ -153,7 +154,7 @@ viewbox(
     "AROMA Installer ported by\n" +
     "<b>" +
     "<#selectbg_g>" + getvar("aroma_ported_by") + "</#>\n" +
-    "</b></@>\n\n"+
+    "</b></@>\n\n" +
     
     "<@right>Select Next to continue.</@>" +
     "",
@@ -207,7 +208,7 @@ if
   # If this is a Gingerbread ROM, the user has Froyo bootloaders so our ROM
   # won't work correctly.
   # Exit status 0 means GB, 1 means other (Froyo)
-  resexec("scripts/kernel_check.sh") != 0
+  zipexec("tools/kernel_check") != 0
 then
   alert(
     # Arg 1
@@ -351,22 +352,23 @@ if
     "You selected the following options:\n\n" +
 
     # Installation type
+    "<#selectbg_g>" +
     iif(cmp(getvar("option_install_type"), "==", "1"), "Quick", "Customized") +
-    " Installation\n\n" +
+    "</#> Installation\n\n" +
     
-    "Do /data backup\n" +
+    "Do /data backup\t" +
     "<b><#selectbg_g>" +
-    iif(cmp(getvar("option_do_data_backup"), "==", "1"), "Yes", "No") +
+    iif(cmp(getvar("option_do_data_backup"), "==", "1"), "<#0f0>Yes</#>", "<#f00>No</#>") +
     "</#></b>\n" +
     
-    "Install modem\n" +
+    "Install modem\t" +
     "<b><#selectbg_g>" +
-    iif(cmp(getvar("option_install_modem"), "==", "1"), "Yes", "No") +
+    iif(cmp(getvar("option_install_modem"), "==", "1"), "<#0f0>Yes</#>", "<#f00>No</#>") +
     "</#></b>\n" +
     
-    "Install kernel\n" +
+    "Install kernel\t\t" +
     "<b><#selectbg_g>" +
-    iif(cmp(getvar("option_install_kernel"), "==", "1"), "Yes", "No") +
+    iif(cmp(getvar("option_install_kernel"), "==", "1"), "<#0f0>Yes</#>", "<#f00>No</#>") +
     "</#></b>\n" +
     
     "\n" +
