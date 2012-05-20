@@ -6,6 +6,7 @@ zipalign /data on data restore
 Use dd to zero out bml12 when doing a modem flash.
   Also do the same for a kernel flash
   Looks like writing to bml block files using dd doesn't work.
+
 Customizations
   Wallpapers
   Launchers
@@ -50,5 +51,8 @@ Integrate inline if support
   iff function
 Use busybox rm -rf /dir/* & cp -rf to copy files and overwrite in updater-scripts.
   http://forum.xda-developers.com/showpost.php?p=22796132&postcount=290
-Add colors to the install confirmation screen
-  red no, green yes
+Add a confirmation screen before the install begins
+  List all options the user has picked
+  List that you are/aren't doing a /data backup in bold letters
+  Add colors to the install confirmation screen
+    red no, green yes
