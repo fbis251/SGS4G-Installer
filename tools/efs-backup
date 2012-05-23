@@ -6,26 +6,36 @@ PATH=/tmp:/sbin:$PATH
 BB=/tmp/busybox
 backup_dir=/sdcard/aroma-backup
 efs_device=/dev/block/stl3
+sdcard_device=/dev/block/mmcblk0p1
+nv_data_file=/efs/root/afs/settings/nv_data.bin
 efs_backfile=$backup_dir/efs-`$BB date +"%m-%d-%y--%H-%M"`.tar
-tmp_backfile=efs
 
-if $BB test -d $datadir; then
-  $BB test ! -d $backup_dir && $BB mkdir $backup_dir
-  
-  cd /tmp/
-  echo 'Backing up efs'
-  $BB dd if=$efs_device of=$tmp_backfile && \
-  $BB tar cf $efs_backfile $tmp_backfile && \
-  $BB md5sum -t $efs_backfile >> $efs_backfile && \
-  $BB mv $efs_backfile $efs_backfile.md5 && \
-  $BB rm $tmp_backfile
-  
-  if $BB test $? -ne 0; then
-    echo "efs backup failed"
-    exit 1
-  else
-    echo "efs backup completed"
-  fi
-  exit 0
+$BB test ! -d $backup_dir && $BB mkdir $backup_dir
+
+echo 'Backing up efs'
+# We need to make sure that everything is mounted before we continue
+$BB mkdir -p /efs /sdcard
+$BB mount -t vfat $efs_device /efs
+$BB mount -t vfat $sdcard_device /sdcard
+
+cd /efs
+
+if $BB test ! -e $nv_data_file; then
+  # The nv_data.bin file wasn't found, exit
+  echo "ERROR: nv_data.bin file not found, backup CANNOT be created, exiting."
+  exit 1
 fi
+
+# We're going to create a tarball of efs, then create an md5sum for it
+$BB tar cf $efs_backfile * && \
+$BB md5sum $efs_backfile > $efs_backfile.md5
+
+# Test to see if the backup succeeded
+if $BB test $? -ne 0; then
+  echo "efs backup failed"
+  exit 1
+else
+  echo "efs backup completed"
+fi
+exit 0
 
