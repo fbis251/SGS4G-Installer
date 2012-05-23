@@ -6,13 +6,16 @@ zipalign /data on data restore
 Use dd to zero out bml12 when doing a modem flash.
   Also do the same for a kernel flash
   Looks like writing to bml block files using dd doesn't work.
+Use rom.prop to control kernel/mod versions
+  Allow for modem names
+  Allow for kernel names
+Add mounts.prop to hold mounts information for easier porting
 
 Customizations
   Wallpapers
   Launchers
   Bloatware
   Different bootanimations?
-Add mounts.prop to hold mounts information for easier porting
 
 # DONE #
 Add ability to check for Froyo/GB using a recovery prop file.
