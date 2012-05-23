@@ -18,3 +18,12 @@ aroma_theme=ics
 
 # Please leave this in ;)
 aroma_ported_by=Fernando Barillas (FBis251)
+
+# Mounts information, triple check before you change these!!!
+partition_system=/dev/block/stl9
+partition_data=/dev/block/stl10
+partition_cache=/dev/block/stl11
+partition_sdcard=/dev/block/mmcblk0p1
+partition_kernel=/dev/block/bml7
+partition_modem=/dev/block/bml12
+

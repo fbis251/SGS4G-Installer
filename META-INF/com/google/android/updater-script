@@ -7,10 +7,9 @@ else
 endif;
 
 ui_print("@Mounting partitions");
-
-run_program("/sbin/mount", "/dev/block/stl9 /system");
-run_program("/sbin/mount", "/dev/block/stl10 /data");
-run_program("/sbin/mount", "/dev/block/stl11 /cache");
+run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop","partition_system") + " /system");
+run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop","partition_data")   + " /data");
+run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop","partition_cache")  + " /cache");
 
 show_progress(0.0, 0);
 ui_print("@Copying required files");
@@ -53,38 +52,38 @@ endif;
 
 ui_print("@Formatting /system");
 unmount("/system");
-run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl9");
-run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "SYSTEM", "-b", "4096", "-m", "0", "-F", "/dev/block/stl9");
+run_program("/tmp/fsck.ext4", "-fy", file_getprop("/tmp/aroma/options.prop","partition_system"));
+run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "SYSTEM", "-b", "4096", "-m", "0", "-F", file_getprop("/tmp/aroma/options.prop","partition_system"));
 ui_print(" Tuning filesystem");
-run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl9");
-run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl9");
+run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", file_getprop("/tmp/aroma/options.prop","partition_system"));
+run_program("/tmp/fsck.ext4", "-Dfy", file_getprop("/tmp/aroma/options.prop","partition_system"));
 ui_print(" Formatting /system complete");
 set_progress(0.2);
 
 ui_print("@Formatting /data");
 unmount("/data");
-run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl10");
-run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "DATA", "-b", "4096", "-m", "0", "-F", "/dev/block/stl10");
+run_program("/tmp/fsck.ext4", "-fy", file_getprop("/tmp/aroma/options.prop","partition_data"));
+run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "DATA", "-b", "4096", "-m", "0", "-F", file_getprop("/tmp/aroma/options.prop","partition_data"));
 ui_print(" Tuning filesystem");
-run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl10");
-run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl10");
+run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", file_getprop("/tmp/aroma/options.prop","partition_data"));
+run_program("/tmp/fsck.ext4", "-Dfy", file_getprop("/tmp/aroma/options.prop","partition_data"));
 ui_print(" Formatting /data complete");
 set_progress(0.25);
 
 ui_print("@Formatting /cache");
 unmount("/cache");
-run_program("/tmp/fsck.ext4", "-fy", "/dev/block/stl11");
-run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "CACHE", "-b", "4096", "-m", "0", "-F", "/dev/block/stl11");
+run_program("/tmp/fsck.ext4", "-fy", file_getprop("/tmp/aroma/options.prop","partition_cache"));
+run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "CACHE", "-b", "4096", "-m", "0", "-F", file_getprop("/tmp/aroma/options.prop","partition_cache"));
 ui_print(" Tuning filesystem");
-run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", "/dev/block/stl11");
-run_program("/tmp/fsck.ext4", "-Dfy", "/dev/block/stl11");
+run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", file_getprop("/tmp/aroma/options.prop","partition_cache"));
+run_program("/tmp/fsck.ext4", "-Dfy", file_getprop("/tmp/aroma/options.prop","partition_cache"));
 ui_print(" Formatting /cache complete");
 set_progress(0.3);
 
 ui_print("@Mounting partitions as ext4");
-run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl9", "/system");
-run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl10", "/data");
-run_program("/sbin/mount", "-t", "ext4", "/dev/block/stl11", "/cache");
+run_program("/sbin/mount", "-t", "ext4", file_getprop("/tmp/aroma/options.prop","partition_system"), "/system");
+run_program("/sbin/mount", "-t", "ext4", file_getprop("/tmp/aroma/options.prop","partition_data"),   "/data");
+run_program("/sbin/mount", "-t", "ext4", file_getprop("/tmp/aroma/options.prop","partition_cache"),  "/cache");
 
 ui_print("@Extracting Files");
 # show progress takes two arguments
@@ -213,7 +212,7 @@ if
   file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
 then
   ui_print("@Flashing modem");
-  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", "/dev/block/bml12");
+  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", file_getprop("/tmp/aroma/options.prop","partition_modem"));
 endif;
 set_progress(0.8);
 
@@ -221,7 +220,7 @@ if
   file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
 then
   ui_print("@Flashing kernel");
-  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", "/dev/block/bml7");
+  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", file_getprop("/tmp/aroma/options.prop","partition_kernel"));
 endif;
 set_progress(0.85);
 

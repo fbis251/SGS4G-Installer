@@ -12,25 +12,33 @@ setvar("aroma_prop", "installer.prop");
 # Configure the variables
 #
 # Standard ROM options
-setvar("rom_name",        resprop(getvar("aroma_prop"), "rom_name"));
-setvar("rom_version",     resprop(getvar("aroma_prop"), "rom_version"));
-setvar("rom_author",      resprop(getvar("aroma_prop"), "rom_author"));
-setvar("rom_device",      resprop(getvar("aroma_prop"), "rom_device"));
-setvar("rom_date",        resprop(getvar("aroma_prop"), "rom_date"));
+setvar("rom_name",         resprop(getvar("aroma_prop"), "rom_name"));
+setvar("rom_version",      resprop(getvar("aroma_prop"), "rom_version"));
+setvar("rom_author",       resprop(getvar("aroma_prop"), "rom_author"));
+setvar("rom_device",       resprop(getvar("aroma_prop"), "rom_device"));
+setvar("rom_date",         resprop(getvar("aroma_prop"), "rom_date"));
 
 # Mod information
-setvar("rom_modem",       resprop(getvar("aroma_prop"), "rom_modem"));
-setvar("rom_kernel",      resprop(getvar("aroma_prop"), "rom_kernel"));
+setvar("rom_modem",        resprop(getvar("aroma_prop"), "rom_modem"));
+setvar("rom_kernel",       resprop(getvar("aroma_prop"), "rom_kernel"));
 
 # Phone model/information
-setvar("phone_model",     resprop(getvar("aroma_prop"), "phone_model"));
-setvar("phone_name",      resprop(getvar("aroma_prop"), "phone_name"));
+setvar("phone_model",      resprop(getvar("aroma_prop"), "phone_model"));
+setvar("phone_name",       resprop(getvar("aroma_prop"), "phone_name"));
 
 # Theme options
-setvar("aroma_theme",     resprop(getvar("aroma_prop"), "aroma_theme"));
+setvar("aroma_theme",      resprop(getvar("aroma_prop"), "aroma_theme"));
 
 # Please leave this in ;)
-setvar("aroma_ported_by", resprop(getvar("aroma_prop"), "aroma_ported_by"));
+setvar("aroma_ported_by",  resprop(getvar("aroma_prop"), "aroma_ported_by"));
+
+# Mounts information
+setvar("partition_system", resprop(getvar("aroma_prop"), "partition_system"));
+setvar("partition_data",   resprop(getvar("aroma_prop"), "partition_data"));
+setvar("partition_cache",  resprop(getvar("aroma_prop"), "partition_cache"));
+setvar("partition_sdcard", resprop(getvar("aroma_prop"), "partition_sdcard"));
+setvar("partition_kernel", resprop(getvar("aroma_prop"), "partition_kernel"));
+setvar("partition_modem",  resprop(getvar("aroma_prop"), "partition_modem"));
 
 ##
 # Files
@@ -68,9 +76,9 @@ splash(2500, "splash");
 #
 # Mount all the mount points. We can manipulate the filesystem before the install.
 #
-run_program("/sbin/mount", "/dev/block/stl9 /system");
-run_program("/sbin/mount", "/dev/block/stl10 /data");
-run_program("/sbin/mount", "/dev/block/mmcblk0p1 /sdcard");
+run_program("/sbin/mount", getvar("partition_system") + " /system");
+run_program("/sbin/mount", getvar("partition_data") + " /data");
+run_program("/sbin/mount", getvar("partition_sdcard") + " /sdcard");
 
 ##
 # Default installation options
@@ -89,12 +97,12 @@ if
 then
   # We're loading the font from the ROM directory
   setvar(font_path, "system/fonts/DroidSans.ttf");
-  fontload("0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
+  fontload("0", getvar(font_path), "12" ); #-- "0" = Small Font
   fontload("1", getvar(font_path), "18" ); #-- "1" = Big Font
 else
   # We'll use aroma's font
   setvar(font_path, "ttf/Roboto-Regular.ttf");
-  fontresload("0", getvar(font_path), "12" ); #-- "0" = Small Font ( Look at Fonts & UNICODE Demo Below )
+  fontresload("0", getvar(font_path), "12" ); #-- "0" = Small Font
   fontresload("1", getvar(font_path), "18" ); #-- "1" = Big Font
 endif;
 
@@ -340,6 +348,12 @@ writetmpfile(
   "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
   "option_install_modem="  + getvar("option_install_modem")  + "\n" +
   "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
+  "partition_system="      + getvar("partition_system") + "\n" +
+  "partition_data="        + getvar("partition_data") + "\n" +
+  "partition_cache="       + getvar("partition_cache") + "\n" +
+  "partition_sdcard="      + getvar("partition_sdcard") + "\n" +
+  "partition_kernel="      + getvar("partition_kernel") + "\n" +
+  "partition_modem="       + getvar("partition_modem") + "\n" +
   "\n"
 );
 

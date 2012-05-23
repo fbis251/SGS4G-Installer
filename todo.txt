@@ -6,10 +6,7 @@ zipalign /data on data restore
 Use dd to zero out bml12 when doing a modem flash.
   Also do the same for a kernel flash
   Looks like writing to bml block files using dd doesn't work.
-Use rom.prop to control kernel/mod versions
-  Allow for modem names
-  Allow for kernel names
-Add mounts.prop to hold mounts information for easier porting
+Try to use flash_image binary instead of redbend for flashing to partitions
 
 Customizations
   Wallpapers
@@ -59,3 +56,7 @@ Add a confirmation screen before the install begins
   List that you are/aren't doing a /data backup in bold letters
   Add colors to the install confirmation screen
     red no, green yes
+Use rom.prop to control kernel/mod versions
+  Allow for modem names
+  Allow for kernel names
+Add mounts.prop to hold mounts information for easier porting
