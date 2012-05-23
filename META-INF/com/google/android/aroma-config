@@ -77,7 +77,7 @@ splash(2500, "splash");
 # Mount all the mount points. We can manipulate the filesystem before the install.
 #
 run_program("/sbin/mount", getvar("partition_system") + " /system");
-run_program("/sbin/mount", getvar("partition_data") + " /data");
+run_program("/sbin/mount", getvar("partition_data")   + " /data");
 run_program("/sbin/mount", getvar("partition_sdcard") + " /sdcard");
 
 ##
