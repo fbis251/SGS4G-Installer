@@ -7,6 +7,9 @@ Use dd to zero out bml12 when doing a modem flash.
   Also do the same for a kernel flash
   Looks like writing to bml block files using dd doesn't work.
 Try to use flash_image binary instead of redbend for flashing to partitions
+GTAB efs-backup
+  http://pastebin.com/LfM60prX
+  The setup isn't exactly like the sgs4g, back it up anyway without doing the nv_data.bin check
 
 Customizations
   Wallpapers
