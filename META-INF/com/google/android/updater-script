@@ -195,7 +195,7 @@ set_perm(1014, 2000, 0550, "/system/etc/dhcpcd/dhcpcd-run-hooks");
 set_perm(0, 2000, 0550, "/system/etc/init.goldfish.sh");
 set_perm(0, 0, 04755, "/system/xbin/su");
 set_perm(0, 0, 04755, "/system/xbin/busybox");
-set_perm(0, 0, 755, "/tmp/updates/redbend_ua");
+set_perm(0, 0, 0755, "/tmp/updates/redbend_ua");
 set_progress(0.6);
 
 if
