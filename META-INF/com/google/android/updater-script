@@ -7,9 +7,10 @@ else
 endif;
 
 ui_print("@Mounting partitions");
-run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop","partition_system") + " /system");
-run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop","partition_data")   + " /data");
-run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop","partition_cache")  + " /cache");
+run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_system"), "/system");
+run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_data"),   "/data");
+run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_cache"),  "/cache");
+run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_efs"),    "/efs");
 
 show_progress(0.0, 0);
 ui_print("@Copying required files");
@@ -33,7 +34,7 @@ set_progress(0.05);
 
 # Run the efs-backup script
 ui_print("@Backing up /efs");
-run_program("/tmp/efs-backup");
+run_program("/tmp/efs-backup", file_getprop("/tmp/aroma/options.prop", "partition_efs"));
 ui_print(" Backup complete");
 set_progress(0.1);
 
@@ -195,7 +196,7 @@ set_perm(1014, 2000, 0550, "/system/etc/dhcpcd/dhcpcd-run-hooks");
 set_perm(0, 2000, 0550, "/system/etc/init.goldfish.sh");
 set_perm(0, 0, 04755, "/system/xbin/su");
 set_perm(0, 0, 04755, "/system/xbin/busybox");
-set_perm(0, 0, 755, "/tmp/updates/redbend_ua");
+set_perm(0, 0, 0755, "/tmp/updates/redbend_ua");
 set_progress(0.6);
 
 if
