@@ -39,6 +39,7 @@ setvar("partition_cache",  resprop(getvar("aroma_prop"), "partition_cache"));
 setvar("partition_sdcard", resprop(getvar("aroma_prop"), "partition_sdcard"));
 setvar("partition_kernel", resprop(getvar("aroma_prop"), "partition_kernel"));
 setvar("partition_modem",  resprop(getvar("aroma_prop"), "partition_modem"));
+setvar("partition_efs",    resprop(getvar("aroma_prop"), "partition_efs"));
 
 ##
 # Files
@@ -76,9 +77,9 @@ splash(2500, "splash");
 #
 # Mount all the mount points. We can manipulate the filesystem before the install.
 #
-run_program("/sbin/mount", getvar("partition_system") + " /system");
-run_program("/sbin/mount", getvar("partition_data")   + " /data");
-run_program("/sbin/mount", getvar("partition_sdcard") + " /sdcard");
+exec("/sbin/mount", getvar("partition_system"), "/system");
+exec("/sbin/mount", getvar("partition_data"),   "/data");
+exec("/sbin/mount", getvar("partition_sdcard"), "/sdcard");
 
 ##
 # Default installation options
@@ -348,12 +349,13 @@ writetmpfile(
   "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
   "option_install_modem="  + getvar("option_install_modem")  + "\n" +
   "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
-  "partition_system="      + getvar("partition_system") + "\n" +
-  "partition_data="        + getvar("partition_data") + "\n" +
-  "partition_cache="       + getvar("partition_cache") + "\n" +
-  "partition_sdcard="      + getvar("partition_sdcard") + "\n" +
-  "partition_kernel="      + getvar("partition_kernel") + "\n" +
-  "partition_modem="       + getvar("partition_modem") + "\n" +
+  "partition_system="      + getvar("partition_system")      + "\n" +
+  "partition_data="        + getvar("partition_data")        + "\n" +
+  "partition_cache="       + getvar("partition_cache")       + "\n" +
+  "partition_sdcard="      + getvar("partition_sdcard")      + "\n" +
+  "partition_kernel="      + getvar("partition_kernel")      + "\n" +
+  "partition_modem="       + getvar("partition_modem")       + "\n" +
+  "partition_efs="         + getvar("partition_efs")         + "\n" +
   "\n"
 );
 
