@@ -26,4 +26,5 @@ partition_cache=/dev/block/stl11
 partition_sdcard=/dev/block/mmcblk0p1
 partition_kernel=/dev/block/bml7
 partition_modem=/dev/block/bml12
+partition_efs=/dev/block/bml3
 
