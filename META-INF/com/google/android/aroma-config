@@ -15,7 +15,7 @@ setvar("aroma_prop", "installer.prop");
 setvar("rom_name",         resprop(getvar("aroma_prop"), "rom_name"));
 setvar("rom_version",      resprop(getvar("aroma_prop"), "rom_version"));
 setvar("rom_author",       resprop(getvar("aroma_prop"), "rom_author"));
-setvar("rom_device",       resprop(getvar("aroma_prop"), "rom_device"));
+setvar("rom_device",       resprop(getvar("aroma_prop"), "device_name"));
 setvar("rom_date",         resprop(getvar("aroma_prop"), "rom_date"));
 
 # Mod information
@@ -23,8 +23,8 @@ setvar("rom_modem",        resprop(getvar("aroma_prop"), "rom_modem"));
 setvar("rom_kernel",       resprop(getvar("aroma_prop"), "rom_kernel"));
 
 # Phone model/information
-setvar("phone_model",      resprop(getvar("aroma_prop"), "phone_model"));
-setvar("phone_name",       resprop(getvar("aroma_prop"), "phone_name"));
+setvar("device_model",     resprop(getvar("aroma_prop"), "device_model"));
+setvar("device_name",      resprop(getvar("aroma_prop"), "device_name"));
 
 # Theme options
 setvar("aroma_theme",      resprop(getvar("aroma_prop"), "aroma_theme"));
@@ -172,8 +172,8 @@ viewbox(
 );
 
 if
-  # Check if we're using the correct phone_model
-  file_getprop("/system/build.prop", "ro.product.device") != getvar("phone_model")
+  # Check if we're using the correct device_model
+  file_getprop("/system/build.prop", "ro.product.device") != getvar("device_model")
 then
   # Check if the phone model exists in build.prop
   setvar("current_device",file_getprop("/system/build.prop", "ro.product.device"));
@@ -190,7 +190,7 @@ then
       "Unknown Device!",
       # Arg 2
       "This ROM is only for the\n" +
-      "<b><#selectbg_g>" + getvar("phone_name") + " (" + getvar("phone_model") + ").</#></b>\n\n" +
+      "<b><#selectbg_g>" + getvar("device_name") +" (" + getvar("device_model") + ").</#></b>\n\n" +
       
       "You are using the following device:\n" +
       "<b><#selectbg_g>" +
