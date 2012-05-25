@@ -34,7 +34,7 @@ set_progress(0.05);
 
 # Run the efs-backup script
 ui_print("@Backing up /efs");
-run_program("/tmp/efs-backup", file_getprop("/tmp/aroma/options.prop", "partition_efs"));
+run_program("/tmp/efs-backup");
 ui_print(" Backup complete");
 set_progress(0.1);
 
