@@ -1,27 +1,24 @@
 #!/tmp/busybox sh
 ## Performs backup of the efs partition
-set -x
+## This script assumes that you already mounted all the necessary partitions
 
 PATH=/tmp:/sbin:$PATH
 BB=/tmp/busybox
 backup_dir=/sdcard/aroma-backup
-efs_device=/dev/block/stl3
-sdcard_device=/dev/block/mmcblk0p1
-nv_data_file=/efs/root/afs/settings/nv_data.bin
+efs_mountpoint=/efs
 efs_backfile=$backup_dir/efs-`$BB date +"%m-%d-%y--%H-%M"`.tar
 
+# Make sure that the aroma backup directory exists
 $BB test ! -d $backup_dir && $BB mkdir $backup_dir
 
 echo 'Backing up efs'
-# We need to make sure that everything is mounted before we continue
-$BB mkdir -p /efs /sdcard
-$BB mount -t vfat $efs_device /efs
-$BB mount -t vfat $sdcard_device /sdcard
+cd $efs_mountpoint
 
-cd /efs
+# We'll store the results of ls, if there are no files it will be blank
+is_empty=`ls $efs_mountpoint`
 
-if $BB test ! -e $nv_data_file; then
-  # The nv_data.bin file wasn't found, exit
+if [ efs == efs"$is_empty" ]; then
+  # The /efs partition was empty, we're not attempting a backup
   echo "ERROR: nv_data.bin file not found, backup CANNOT be created, exiting."
   exit 1
 fi
