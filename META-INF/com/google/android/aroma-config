@@ -23,8 +23,9 @@ setvar("rom_modem",        resprop(getvar("aroma_prop"), "rom_modem"));
 setvar("rom_kernel",       resprop(getvar("aroma_prop"), "rom_kernel"));
 
 # Phone model/information
-setvar("device_model",     resprop(getvar("aroma_prop"), "device_model"));
+setvar("device_product",   resprop(getvar("aroma_prop"), "device_product"));
 setvar("device_name",      resprop(getvar("aroma_prop"), "device_name"));
+setvar("device_model",     resprop(getvar("aroma_prop"), "device_model"));
 
 # Theme options
 setvar("aroma_theme",      resprop(getvar("aroma_prop"), "aroma_theme"));
@@ -42,17 +43,24 @@ setvar("partition_modem",  resprop(getvar("aroma_prop"), "partition_modem"));
 setvar("partition_efs",    resprop(getvar("aroma_prop"), "partition_efs"));
 
 ##
+# AROMA variables
+#
+setvar("current_device", "Unknown");
+setvar("device_recognized", "false");
+
+##
 # Files
 #
 setvar("file_agreement", readfile_aroma("agreement.txt"));
 
 ##
-# Set up variables
+# Set up variables from INI
 #
 ini_set("rom_name",    getvar("rom_name"));
 ini_set("rom_version", getvar("rom_version"));
 ini_set("rom_author",  getvar("rom_author"));
 ini_set("rom_device",  getvar("rom_device"));
+
 
 ##
 # Calibrate Touchscreen
@@ -97,7 +105,7 @@ if
   zipprop("system/build.prop", "ro.product.device") != ""
 then
   # We're loading the font from the ROM directory
-  setvar(font_path, "system/fonts/DroidSans.ttf");
+  setvar(font_path, "system/fonts/Roboto-Regular.ttf");
   fontload("0", getvar(font_path), "12" ); #-- "0" = Small Font
   fontload("1", getvar(font_path), "18" ); #-- "1" = Big Font
 else
@@ -171,19 +179,36 @@ viewbox(
     "icons/info"
 );
 
+
+# Try to figure out which device we're using
 if
-  # Check if we're using the correct device_model
-  file_getprop("/system/build.prop", "ro.product.device") != getvar("device_model")
+  file_getprop("default.prop", "ro.product.device") != ""
 then
-  # Check if the phone model exists in build.prop
-  setvar("current_device",file_getprop("/system/build.prop", "ro.product.device"));
+  setvar("current_device", file_getprop("default.prop", "ro.product.device"));
+else
   if
-  file_getprop("/system/build.prop", "ro.product.device") == ""
+    file_getprop("/system/build.prop", "ro.product.device") != ""
   then
-    # Since the file wasn't found we'll just say unknown
-    setvar("current_device", "Unknown");
+    setvar("current_device", file_getprop("/system/build.prop", "ro.product.device"));
   endif;
-  
+endif;
+
+# Try to see if this is a device we can install to
+if
+  getvar("current_device") == getvar("device_product")
+then
+  setvar("device_recognized", "true");
+endif;
+
+if
+  getvar("current_device") == getvar("device_model")
+then
+  setvar("device_recognized", "true");
+endif;
+
+if
+  getvar("device_recognized") == "false"
+then
   if
     confirm(
       # Arg 1
@@ -217,7 +242,7 @@ if
   # If this is a Gingerbread ROM, the user has Froyo bootloaders so our ROM
   # won't work correctly.
   # Exit status 0 means GB, 1 means other (Froyo)
-  zipexec("tools/kernel_check") != 0
+  zipexec("tools/kernel-check.sh") != 0
 then
   alert(
     # Arg 1
@@ -244,9 +269,9 @@ agreebox(
     "icons/agreement",
   # Arg 4
     getvar("file_agreement"),
-  # 5
+  # Arg 5
     "I agree to the Terms of Use.",
-  # 6
+  # Arg 6
     "Please agree to the Terms of Use to continue with the installation."
 );
 

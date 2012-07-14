@@ -30,7 +30,7 @@ backfile=$backup_dir/backup-data.cpio
 
 if $BB test -f $backfile; then
   echo "Bonsai Install: restoring apps"
-  cd / && $BB cat $backfile | $BB cpio -imu 
+  cd / && $BB cat $backfile | $BB cpio -imu
 
   if $BB test $? -ne 0; then
     echo "Bonsai Install: restore failed"
@@ -39,6 +39,9 @@ if $BB test -f $backfile; then
     $BB test -d /data && $BB chmod 755 /data/app
     echo "Bonsai Install: restore completed"
   fi
+
+  echo "Deleting dalvik-cache"
+  $BB rm -rf /data/dalvik-cache
 
   exit 0
 else

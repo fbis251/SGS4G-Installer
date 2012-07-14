@@ -6,7 +6,7 @@ PATH=/tmp:/sbin:$PATH
 BB=/tmp/busybox
 backup_dir=/sdcard/aroma-backup
 efs_mountpoint=/efs
-efs_backfile=$backup_dir/efs-`$BB date +"%m-%d-%y--%H-%M"`.tar
+efs_backfile=$backup_dir/efs-`$BB date +"%m-%d-%y_%H-%M"`.tar
 
 # Make sure that the aroma backup directory exists
 $BB test ! -d $backup_dir && $BB mkdir $backup_dir

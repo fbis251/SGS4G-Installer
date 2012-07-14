@@ -6,11 +6,12 @@ rom_date=Jan 1, 1970
 
 # Mod information
 rom_modem=Samsung Galaxy S 4G KG4 Modem
-rom_kernel=SMS KJ6 v0.2.0 by bhundven
+rom_kernel=CM9 ICS Kernel by Team Acid
 
 # Phone model/information
+device_product=galaxys4gmtd
 device_model=SGH-T959V
-device_name=Samsung Galaxy S 4G
+device_name=Samsung Galaxy S 4G (mtd)
 
 # Theme options
 aroma_theme=ics
@@ -19,11 +20,10 @@ aroma_theme=ics
 aroma_ported_by=Fernando Barillas (FBis251)
 
 # Mounts information, triple check before you change these!!!
-partition_system=/dev/block/stl9
-partition_data=/dev/block/stl10
-partition_cache=/dev/block/stl11
+partition_system=/dev/block/mtdblock2
+partition_data=/dev/block/mtdblock3
+partition_cache=/dev/block/mtdblock5
 partition_sdcard=/dev/block/mmcblk0p1
-partition_kernel=/dev/block/bml7
-partition_modem=/dev/block/bml12
-partition_efs=/dev/block/bml3
+partition_efs=/dev/block/mtdblock4
+partition_modem=/dev/block/mtdblock6
 

@@ -6,205 +6,235 @@ else
   ui_print("@Performing a customized install");
 endif;
 
-ui_print("@Mounting partitions");
-run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_system"), "/system");
-run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_data"),   "/data");
-run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_cache"),  "/cache");
-run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_efs"),    "/efs");
-
 show_progress(0.0, 0);
 ui_print("@Copying required files");
 package_extract_file("tools/fsck.ext4", "/tmp/fsck.ext4");
 package_extract_file("tools/tune2fs.ext4", "/tmp/tune2fs.ext4");
 package_extract_file("tools/mkfs.ext4", "/tmp/mkfs.ext4");
 package_extract_file("tools/mke2fs.conf", "/etc/mke2fs.conf");
-package_extract_file("tools/data-backup", "/tmp/data-backup");
-package_extract_file("tools/efs-backup", "/tmp/efs-backup");
-package_extract_file("tools/data-restore", "/tmp/data-restore");
-package_extract_file("system/xbin/busybox", "/tmp/busybox");
-set_perm(0, 0, 0755, "/tmp/mkfs.ext4");
+package_extract_file("tools/data-backup.sh", "/tmp/data-backup.sh");
+package_extract_file("tools/efs-backup.sh", "/tmp/efs-backup.sh");
+package_extract_file("tools/data-restore.sh", "/tmp/data-restore.sh");
+package_extract_file("tools/flash-modem.sh", "/tmp/flash-modem.sh");
+package_extract_file("tools/erase_image", "/tmp/erase_image");
+package_extract_file("tools/flash_image", "/tmp/flash_image");
+package_extract_file("tools/busybox", "/tmp/busybox");
 set_perm(0, 0, 0755, "/tmp/fsck.ext4");
 set_perm(0, 0, 0755, "/tmp/tune2fs.ext4");
+set_perm(0, 0, 0755, "/tmp/mkfs.ext4");
 set_perm(0, 0, 0644, "/etc/mke2fs.conf");
-set_perm(0, 0, 0755, "/tmp/data-backup");
-set_perm(0, 0, 0755, "/tmp/efs-backup");
-set_perm(0, 0, 0755, "/tmp/data-restore");
+set_perm(0, 0, 0755, "/tmp/data-backup.sh");
+set_perm(0, 0, 0755, "/tmp/efs-backup.sh");
+set_perm(0, 0, 0755, "/tmp/data-restore.sh");
+set_perm(0, 0, 0755, "/tmp/flash-modem.sh");
+set_perm(0, 0, 0755, "/tmp/erase_image");
+set_perm(0, 0, 0755, "/tmp/flash_image");
 set_perm(0, 0, 0755, "/tmp/busybox");
 set_progress(0.05);
 
 # Run the efs-backup script
-ui_print("@Backing up /efs");
-run_program("/tmp/efs-backup");
-ui_print(" Backup complete");
-set_progress(0.1);
+# TODO: The data backup/restore is handled by updater.sh
+#ui_print("@Backing up /efs");
+#run_program("/sbin/mount", file_getprop("/tmp/aroma/options.prop", "partition_efs"), "/efs");
+#run_program("/tmp/efs-backup.sh");
+#ui_print(" Backup complete");
+#set_progress(0.1);
 
 if
   file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
+  mount("yaffs2", "MTD", "userdata", "/data");
   # Run the modified bonsai backup script
   ui_print("@Backing up /data");
   ui_print(" This may take a few minutes");
-  run_program("/tmp/data-backup");
+  run_program("/tmp/data-backup.sh");
   unmount("/data");
   unmount("/sdcard");
   ui_print(" Backup complete");
   set_progress(0.15);
 endif;
 
-ui_print("@Formatting /system");
+package_extract_file("modem.bin", "/tmp/modem.bin");
+set_perm(0, 0, 0777, "/tmp/modem.bin");
+package_extract_file("updater.sh", "/tmp/updater.sh");
+set_perm(0, 0, 0777, "/tmp/updater.sh");
+package_extract_file("make_ext4fs", "/tmp/make_ext4fs");
+set_perm(0, 0, 0777, "/tmp/make_ext4fs");
+package_extract_file("bml_over_mtd", "/tmp/bml_over_mtd");
+set_perm(0, 0, 0777, "/tmp/bml_over_mtd");
+package_extract_file("bml_over_mtd.sh", "/tmp/bml_over_mtd.sh");
+set_perm(0, 0, 0777, "/tmp/bml_over_mtd.sh");
+package_extract_file("boot.img", "/tmp/boot.img");
+assert(run_program("/tmp/updater.sh") == 0);
+package_extract_file("system/bin/backuptool.sh", "/tmp/backuptool.sh");
+set_perm(0, 0, 0777, "/tmp/backuptool.sh");
+run_program("/tmp/backuptool.sh", "backup");
+
+ui_print("@Unmounting partitions");
 unmount("/system");
-run_program("/tmp/fsck.ext4", "-fy", file_getprop("/tmp/aroma/options.prop","partition_system"));
-run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "SYSTEM", "-b", "4096", "-m", "0", "-F", file_getprop("/tmp/aroma/options.prop","partition_system"));
-ui_print(" Tuning filesystem");
-run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", file_getprop("/tmp/aroma/options.prop","partition_system"));
-run_program("/tmp/fsck.ext4", "-Dfy", file_getprop("/tmp/aroma/options.prop","partition_system"));
-ui_print(" Formatting /system complete");
-set_progress(0.2);
-
-ui_print("@Formatting /data");
 unmount("/data");
-run_program("/tmp/fsck.ext4", "-fy", file_getprop("/tmp/aroma/options.prop","partition_data"));
-run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "DATA", "-b", "4096", "-m", "0", "-F", file_getprop("/tmp/aroma/options.prop","partition_data"));
-ui_print(" Tuning filesystem");
-run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", file_getprop("/tmp/aroma/options.prop","partition_data"));
-run_program("/tmp/fsck.ext4", "-Dfy", file_getprop("/tmp/aroma/options.prop","partition_data"));
-ui_print(" Formatting /data complete");
-set_progress(0.25);
-
-ui_print("@Formatting /cache");
 unmount("/cache");
-run_program("/tmp/fsck.ext4", "-fy", file_getprop("/tmp/aroma/options.prop","partition_cache"));
-run_program("/tmp/mkfs.ext4", "-O", "^ext_attr,^has_journal,^huge_file", "-L", "CACHE", "-b", "4096", "-m", "0", "-F", file_getprop("/tmp/aroma/options.prop","partition_cache"));
-ui_print(" Tuning filesystem");
-run_program("/tmp/tune2fs.ext4", "-c", "1", "-m", "0", "-o", "journal_data_writeback", file_getprop("/tmp/aroma/options.prop","partition_cache"));
-run_program("/tmp/fsck.ext4", "-Dfy", file_getprop("/tmp/aroma/options.prop","partition_cache"));
-ui_print(" Formatting /cache complete");
-set_progress(0.3);
 
-ui_print("@Mounting partitions as ext4");
-run_program("/sbin/mount", "-t", "ext4", file_getprop("/tmp/aroma/options.prop","partition_system"), "/system");
-run_program("/sbin/mount", "-t", "ext4", file_getprop("/tmp/aroma/options.prop","partition_data"),   "/data");
-run_program("/sbin/mount", "-t", "ext4", file_getprop("/tmp/aroma/options.prop","partition_cache"),  "/cache");
+ui_print("@Formatting partitions");
+ui_print("@Formatting /system");
+format("yaffs2", "MTD", "system", "0");
+ui_print("@Formatting /data");
+format("yaffs2", "MTD", "userdata", "0");
+ui_print("@Formatting /cache");
+format("yaffs2", "MTD", "cache", "0");
 
+mount("yaffs2", "MTD", "system", "/system");
 ui_print("@Extracting Files");
 # show progress takes two arguments
 # how much to increment the progress
 # and how many files are gonna get transferred.
-# 700 is a good default for files transferred on a Gingerbread ROM.
+# 700 is a good default for files transferred
 show_progress(0.2, 700);
 ui_print(" Extracting /system");
+package_extract_dir("recovery", "/system");
 package_extract_dir("system", "/system");
 ui_print(" Extracting /data");
 package_extract_dir("data", "/data");
 ui_print(" Extracting /sdcard");
 package_extract_dir("sdcard", "/sdcard");
-ui_print(" Extracting updates");
-package_extract_dir("updates", "/tmp/updates");
 set_progress(0.5);
 
-ui_print("@Setting up busybox and toolbox");
-symlink("dumpstate","/system/bin/dumpcrash");
-symlink("debuggerd", "/system/bin/csview");
-symlink("/system/xbin/su", "/system/bin/su");
+ui_print("@Setting up system");
+symlink("Roboto-Bold.ttf", "/system/fonts/DroidSans-Bold.ttf");
+symlink("Roboto-Regular.ttf", "/system/fonts/DroidSans.ttf");
 symlink("busybox", "/system/xbin/[", "/system/xbin/[[",
-        "/system/xbin/arp", "/system/xbin/ash", "/system/xbin/awk",
-        "/system/xbin/basename", "/system/xbin/bbconfig", "/system/xbin/brctl",
-        "/system/xbin/bunzip2", "/system/xbin/bzcat", "/system/xbin/bzip2",
-        "/system/xbin/cal", "/system/xbin/cat", "/system/xbin/catv",
-        "/system/xbin/chgrp", "/system/xbin/chmod", "/system/xbin/chown",
-        "/system/xbin/chroot", "/system/xbin/cksum", "/system/xbin/clear",
-        "/system/xbin/cmp", "/system/xbin/cp", "/system/xbin/cpio",
-        "/system/xbin/cut", "/system/xbin/date", "/system/xbin/dc",
-        "/system/xbin/dd", "/system/xbin/depmod", "/system/xbin/devmem",
-        "/system/xbin/df", "/system/xbin/diff", "/system/xbin/dirname",
-        "/system/xbin/dmesg", "/system/xbin/dnsd", "/system/xbin/dos2unix",
-        "/system/xbin/du", "/system/xbin/echo", "/system/xbin/ed",
-        "/system/xbin/egrep", "/system/xbin/env", "/system/xbin/expr",
-        "/system/xbin/false", "/system/xbin/fdisk", "/system/xbin/fgrep",
-        "/system/xbin/find", "/system/xbin/fold", "/system/xbin/free",
-        "/system/xbin/freeramdisk", "/system/xbin/fuser", "/system/xbin/getopt",
-        "/system/xbin/grep", "/system/xbin/gunzip", "/system/xbin/gzip",
+        "/system/xbin/adjtimex", "/system/xbin/arp", "/system/xbin/ash",
+        "/system/xbin/awk", "/system/xbin/base64", "/system/xbin/basename",
+        "/system/xbin/bbconfig", "/system/xbin/blkid", "/system/xbin/blockdev",
+        "/system/xbin/brctl", "/system/xbin/bunzip2", "/system/xbin/bzcat",
+        "/system/xbin/bzip2", "/system/xbin/cal", "/system/xbin/cat",
+        "/system/xbin/catv", "/system/xbin/chattr", "/system/xbin/chgrp",
+        "/system/xbin/chmod", "/system/xbin/chown", "/system/xbin/chroot",
+        "/system/xbin/clear", "/system/xbin/cmp", "/system/xbin/comm",
+        "/system/xbin/cp", "/system/xbin/cpio", "/system/xbin/crond",
+        "/system/xbin/crontab", "/system/xbin/cut", "/system/xbin/date",
+        "/system/xbin/dc", "/system/xbin/dd", "/system/xbin/depmod",
+        "/system/xbin/devmem", "/system/xbin/df", "/system/xbin/diff",
+        "/system/xbin/dirname", "/system/xbin/dmesg", "/system/xbin/dnsd",
+        "/system/xbin/dos2unix", "/system/xbin/du", "/system/xbin/echo",
+        "/system/xbin/ed", "/system/xbin/egrep", "/system/xbin/env",
+        "/system/xbin/expand", "/system/xbin/expr", "/system/xbin/false",
+        "/system/xbin/fdisk", "/system/xbin/fgrep", "/system/xbin/find",
+        "/system/xbin/flash_lock", "/system/xbin/flash_unlock",
+        "/system/xbin/flashcp", "/system/xbin/flock", "/system/xbin/fold",
+        "/system/xbin/free", "/system/xbin/freeramdisk", "/system/xbin/fsync",
+        "/system/xbin/ftpget", "/system/xbin/ftpput", "/system/xbin/fuser",
+        "/system/xbin/getopt", "/system/xbin/grep", "/system/xbin/groups",
+        "/system/xbin/gunzip", "/system/xbin/gzip", "/system/xbin/halt",
         "/system/xbin/head", "/system/xbin/hexdump", "/system/xbin/id",
         "/system/xbin/ifconfig", "/system/xbin/insmod", "/system/xbin/install",
-        "/system/xbin/ip", "/system/xbin/kill", "/system/xbin/killall",
-        "/system/xbin/killall5", "/system/xbin/length", "/system/xbin/less",
-        "/system/xbin/ln", "/system/xbin/losetup", "/system/xbin/ls",
-        "/system/xbin/lsmod", "/system/xbin/lspci", "/system/xbin/lsusb",
-        "/system/xbin/lzop", "/system/xbin/lzopcat", "/system/xbin/md5sum",
-        "/system/xbin/mkdir", "/system/xbin/mke2fs", "/system/xbin/mkfifo",
-        "/system/xbin/mkfs.ext2", "/system/xbin/mknod", "/system/xbin/mkswap",
-        "/system/xbin/mktemp", "/system/xbin/modprobe", "/system/xbin/more",
-        "/system/xbin/mount", "/system/xbin/mountpoint", "/system/xbin/mv",
-        "/system/xbin/netstat", "/system/xbin/nice", "/system/xbin/nohup",
-        "/system/xbin/nslookup", "/system/xbin/ntpd", "/system/xbin/od",
-        "/system/xbin/patch", "/system/xbin/pgrep", "/system/xbin/pidof",
-        "/system/xbin/ping", "/system/xbin/pkill", "/system/xbin/printenv",
-        "/system/xbin/printf", "/system/xbin/ps", "/system/xbin/pwd",
-        "/system/xbin/rdev", "/system/xbin/readlink", "/system/xbin/realpath",
-        "/system/xbin/renice", "/system/xbin/reset", "/system/xbin/rm",
-        "/system/xbin/rmdir", "/system/xbin/rmmod", "/system/xbin/route",
-        "/system/xbin/run-parts", "/system/xbin/sed", "/system/xbin/seq",
-        "/system/xbin/setsid", "/system/xbin/sh", "/system/xbin/sha1sum",
-        "/system/xbin/sha256sum", "/system/xbin/sha512sum",
-        "/system/xbin/sleep", "/system/xbin/sort", "/system/xbin/split",
-        "/system/xbin/stat", "/system/xbin/strings", "/system/xbin/stty",
-        "/system/xbin/swapoff", "/system/xbin/swapon", "/system/xbin/sync",
-        "/system/xbin/sysctl", "/system/xbin/tac", "/system/xbin/tail",
-        "/system/xbin/tar", "/system/xbin/tee", "/system/xbin/telnet",
-        "/system/xbin/test", "/system/xbin/tftp", "/system/xbin/time",
+        "/system/xbin/iostat", "/system/xbin/ip", "/system/xbin/kill",
+        "/system/xbin/killall", "/system/xbin/killall5", "/system/xbin/length",
+        "/system/xbin/less", "/system/xbin/ln", "/system/xbin/losetup",
+        "/system/xbin/ls", "/system/xbin/lsattr", "/system/xbin/lsmod",
+        "/system/xbin/lsusb", "/system/xbin/lzcat", "/system/xbin/lzma",
+        "/system/xbin/lzop", "/system/xbin/lzopcat", "/system/xbin/man",
+        "/system/xbin/md5sum", "/system/xbin/mesg", "/system/xbin/mkdir",
+        "/system/xbin/mke2fs", "/system/xbin/mkfifo", "/system/xbin/mkfs.ext2",
+        "/system/xbin/mkfs.vfat", "/system/xbin/mknod", "/system/xbin/mkswap",
+        "/system/xbin/mktemp", "/system/xbin/modinfo", "/system/xbin/modprobe",
+        "/system/xbin/more", "/system/xbin/mount", "/system/xbin/mountpoint",
+        "/system/xbin/mpstat", "/system/xbin/mv", "/system/xbin/nanddump",
+        "/system/xbin/nandwrite", "/system/xbin/netstat", "/system/xbin/nice",
+        "/system/xbin/nohup", "/system/xbin/nslookup", "/system/xbin/ntpd",
+        "/system/xbin/od", "/system/xbin/patch", "/system/xbin/pgrep",
+        "/system/xbin/pidof", "/system/xbin/ping", "/system/xbin/pkill",
+        "/system/xbin/pmap", "/system/xbin/poweroff", "/system/xbin/printenv",
+        "/system/xbin/printf", "/system/xbin/ps", "/system/xbin/pstree",
+        "/system/xbin/pwd", "/system/xbin/pwdx", "/system/xbin/rdev",
+        "/system/xbin/readlink", "/system/xbin/realpath", "/system/xbin/renice",
+        "/system/xbin/reset", "/system/xbin/resize", "/system/xbin/rev",
+        "/system/xbin/rm", "/system/xbin/rmdir", "/system/xbin/rmmod",
+        "/system/xbin/route", "/system/xbin/run-parts", "/system/xbin/rx",
+        "/system/xbin/sed", "/system/xbin/seq", "/system/xbin/setconsole",
+        "/system/xbin/setserial", "/system/xbin/setsid", "/system/xbin/sh",
+        "/system/xbin/sha1sum", "/system/xbin/sha256sum",
+        "/system/xbin/sha512sum", "/system/xbin/sleep", "/system/xbin/sort",
+        "/system/xbin/split", "/system/xbin/stat", "/system/xbin/strings",
+        "/system/xbin/stty", "/system/xbin/sum", "/system/xbin/swapoff",
+        "/system/xbin/swapon", "/system/xbin/sync", "/system/xbin/sysctl",
+        "/system/xbin/tac", "/system/xbin/tail", "/system/xbin/tar",
+        "/system/xbin/taskset", "/system/xbin/tee", "/system/xbin/telnet",
+        "/system/xbin/telnetd", "/system/xbin/test", "/system/xbin/tftp",
+        "/system/xbin/tftpd", "/system/xbin/time", "/system/xbin/timeout",
         "/system/xbin/top", "/system/xbin/touch", "/system/xbin/tr",
-        "/system/xbin/traceroute", "/system/xbin/true", "/system/xbin/tty",
+        "/system/xbin/traceroute", "/system/xbin/true", "/system/xbin/ttysize",
         "/system/xbin/tune2fs", "/system/xbin/umount", "/system/xbin/uname",
-        "/system/xbin/uniq", "/system/xbin/unix2dos", "/system/xbin/unlzop",
-        "/system/xbin/unzip", "/system/xbin/uptime", "/system/xbin/usleep",
-        "/system/xbin/uudecode", "/system/xbin/uuencode", "/system/xbin/vi",
-        "/system/xbin/watch", "/system/xbin/wc", "/system/xbin/wget",
-        "/system/xbin/which", "/system/xbin/whoami", "/system/xbin/xargs",
+        "/system/xbin/uncompress", "/system/xbin/unexpand", "/system/xbin/uniq",
+        "/system/xbin/unix2dos", "/system/xbin/unlzma", "/system/xbin/unlzop",
+        "/system/xbin/unxz", "/system/xbin/unzip", "/system/xbin/uptime",
+        "/system/xbin/usleep", "/system/xbin/uudecode", "/system/xbin/uuencode",
+        "/system/xbin/vi", "/system/xbin/watch", "/system/xbin/wc",
+        "/system/xbin/wget", "/system/xbin/which", "/system/xbin/whoami",
+        "/system/xbin/xargs", "/system/xbin/xz", "/system/xbin/xzcat",
         "/system/xbin/yes",
         "/system/xbin/zcat");
-symlink("toolbox", "/system/bin/cat", "/system/bin/cmp",
-        "/system/bin/date", "/system/bin/dd", "/system/bin/dmesg",
+symlink("mksh", "/system/bin/sh");
+symlink("toolbox", "/system/bin/cat", "/system/bin/chmod",
+        "/system/bin/chown", "/system/bin/cmp", "/system/bin/date",
+        "/system/bin/dd", "/system/bin/df", "/system/bin/dmesg",
         "/system/bin/getevent", "/system/bin/getprop", "/system/bin/hd",
         "/system/bin/id", "/system/bin/ifconfig", "/system/bin/iftop",
         "/system/bin/insmod", "/system/bin/ioctl", "/system/bin/ionice",
-        "/system/bin/kill", "/system/bin/log", "/system/bin/lsmod",
+        "/system/bin/kill", "/system/bin/ln", "/system/bin/log",
+        "/system/bin/ls", "/system/bin/lsmod", "/system/bin/lsof",
+        "/system/bin/mkdir", "/system/bin/mount", "/system/bin/mv",
         "/system/bin/nandread", "/system/bin/netstat",
         "/system/bin/newfs_msdos", "/system/bin/notify", "/system/bin/printenv",
-        "/system/bin/ps", "/system/bin/reboot", "/system/bin/renice",
-        "/system/bin/rmdir", "/system/bin/rmmod", "/system/bin/route",
-        "/system/bin/schedtop", "/system/bin/sendevent",
-        "/system/bin/setconsole", "/system/bin/setprop", "/system/bin/sleep",
-        "/system/bin/smd", "/system/bin/start", "/system/bin/stop",
-        "/system/bin/sync", "/system/bin/top", "/system/bin/uptime",
-        "/system/bin/vmstat", "/system/bin/watchprops",
+        "/system/bin/ps", "/system/bin/r", "/system/bin/reboot",
+        "/system/bin/renice", "/system/bin/rm", "/system/bin/rmdir",
+        "/system/bin/rmmod", "/system/bin/route", "/system/bin/schedtop",
+        "/system/bin/sendevent", "/system/bin/setconsole",
+        "/system/bin/setprop", "/system/bin/sleep", "/system/bin/smd",
+        "/system/bin/start", "/system/bin/stop", "/system/bin/sync",
+        "/system/bin/top", "/system/bin/touch", "/system/bin/umount",
+        "/system/bin/uptime", "/system/bin/vmstat", "/system/bin/watchprops",
         "/system/bin/wipe");
-
 set_progress(0.55);
 
 ui_print("@Setting permissions");
-set_perm_recursive(0, 0, 0755, 0644, "system");
-set_perm_recursive(0, 2000, 0755, 0755, "system/bin");
-set_perm_recursive(0, 0, 0755, 0755, "system/etc");
-set_perm_recursive(0, 0, 0755, 0755, "system/etc/bluetooth");
-set_perm_recursive(1002, 1002, 0755, 0440, "system/etc/bluetooth");
-set_perm_recursive(0, 0, 0777, 0777, "system/etc/init.d");
-set_perm(0, 0, 0755, "/system/etc/bluetooth");
-set_perm(0, 3003, 02755, "/system/bin/netcfg");
+set_perm_recursive(0, 0, 0755, 0644, "/system");
+set_perm_recursive(0, 2000, 0755, 0755, "/system/bin");
+set_perm(0, 3003, 02750, "/system/bin/netcfg");
 set_perm(0, 3004, 02755, "/system/bin/ping");
+set_perm(0, 2000, 06750, "/system/bin/run-as");
+set_perm_recursive(1002, 1002, 0755, 0440, "/system/etc/bluetooth");
+set_perm(0, 0, 0755, "/system/etc/bluetooth");
+set_perm(1000, 1000, 0640, "/system/etc/bluetooth/auto_pairing.conf");
+set_perm(3002, 3002, 0444, "/system/etc/bluetooth/blacklist.conf");
 set_perm(1002, 1002, 0440, "/system/etc/dbus.conf");
 set_perm(1014, 2000, 0550, "/system/etc/dhcpcd/dhcpcd-run-hooks");
+set_perm_recursive(0, 2000, 0755, 0755, "/system/etc/init.d");
+set_perm(0, 0, 0755, "/system/etc/init.d");
 set_perm(0, 2000, 0550, "/system/etc/init.goldfish.sh");
-set_perm(0, 0, 04755, "/system/xbin/su");
-set_perm(0, 0, 04755, "/system/xbin/busybox");
-set_perm(0, 0, 0755, "/tmp/updates/redbend_ua");
-set_progress(0.6);
+set_perm_recursive(0, 0, 0755, 0555, "/system/etc/ppp");
+set_perm(0, 2000, 0755, "/system/vendor");
+set_perm_recursive(0, 2000, 0755, 0755, "/system/vendor/bin");
+set_perm(0, 2000, 0755, "/system/vendor/firmware");
+set_perm(0, 2000, 0755, "/system/vendor/lib");
+set_perm_recursive(0, 2000, 0755, 0644, "/system/vendor/lib/drm");
+set_perm(0, 0, 0644, "/system/vendor/lib/drm/libdrmwvmplugin.so");
+set_perm(0, 2000, 0755, "/system/vendor/lib/egl");
+set_perm(0, 2000, 0755, "/system/vendor/lib/hw");
+set_perm_recursive(0, 2000, 0755, 0755, "/system/xbin");
+set_perm(0, 0, 06755, "/system/xbin/librank");
+set_perm(0, 0, 06755, "/system/xbin/procmem");
+set_perm(0, 0, 06755, "/system/xbin/procrank");
+set_perm(0, 0, 06755, "/system/xbin/su");
+set_perm_recursive(0, 0, 0755, 0555, "/system/etc/init.d");
 
 if
   file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
+  mount("yaffs2", "MTD", "userdata", "/data");
   ui_print("@Restoring applications and data");
   ui_print(" This may take a while");
-  run_program("/tmp/data-restore");
+  run_program("/tmp/data-restore.sh");
   ui_print(" Restore completed");
 endif;
 set_progress(0.7);
@@ -213,26 +243,23 @@ if
   file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
 then
   ui_print("@Flashing modem");
-  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/modem.bin", file_getprop("/tmp/aroma/options.prop","partition_modem"));
+  run_program("/tmp/flash-modem.sh", file_getprop("/tmp/aroma/options.prop", "partition_modem"));
 endif;
 set_progress(0.8);
 
 if
   file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
 then
-  ui_print("@Flashing kernel");
-  run_program("/tmp/updates/redbend_ua", "restore", "/tmp/updates/zImage", file_getprop("/tmp/aroma/options.prop","partition_kernel"));
+  ui_print("@Flashing boot.img");
+  run_program("/tmp/flash_image", "boot", "/tmp/boot.img");
 endif;
-set_progress(0.85);
-
-ui_print("@Installing busybox");
-run_program("system/xbin/busybox", "--install", "-s", "/system/xbin");
 set_progress(0.9);
 
 ui_print("@Unmounting partitions");
-run_program("/sbin/umount", "/system");
-run_program("/sbin/umount", "/data");
-run_program("/sbin/umount", "/cache");
+unmount("/system");
+unmount("/data");
+unmount("/cache");
+unmount("/efs");
 set_progress(1.0);
 show_progress(1.0, 0);
 
