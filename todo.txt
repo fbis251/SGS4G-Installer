@@ -4,3 +4,4 @@ Figure out how to integrate update.sh into AROMA
 -- Split update.sh into two parts. Try to run the top part via AROMA to verify we're not on BML then we can continue with the rest of the installation
 Add an expected kernel version check to default.prop and kernel_check.sh
 -- Try to figure out a way to check if we're on GB minimum since we can flash from anything that's not Froyo
+
