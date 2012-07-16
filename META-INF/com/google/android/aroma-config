@@ -1,3 +1,28 @@
+################################################################################
+#
+# Copyright (C) 2011 Free Software Foundation, Inc.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public License as published
+# by the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+# USA.
+#
+# License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>
+#
+################################################################################
+# Created by Fernando Barillas, Team Acid
+################################################################################
+
 ###############################################################
 # Please do not edit any of the options below unless          #
 # you know what you're doing!                                 #
@@ -101,18 +126,18 @@ setvar("option_install_kernel", 1);
 # Set fonts
 #
 if
-  # Make sure that the zip file build.prop exists, which probably means that the font exists
-  zipprop("system/build.prop", "ro.product.device") != ""
+    # Make sure that the zip file build.prop exists, which probably means that the font exists
+    zipprop("system/build.prop", "ro.product.device") != ""
 then
-  # We're loading the font from the ROM directory
-  setvar(font_path, "system/fonts/Roboto-Regular.ttf");
-  fontload("0", getvar(font_path), "12" ); #-- "0" = Small Font
-  fontload("1", getvar(font_path), "18" ); #-- "1" = Big Font
+    # We're loading the font from the ROM directory
+    setvar(font_path, "system/fonts/Roboto-Regular.ttf");
+    fontload("0", getvar(font_path), "12" ); #-- "0" = Small Font
+    fontload("1", getvar(font_path), "18" ); #-- "1" = Big Font
 else
-  # We'll use aroma's font
-  setvar(font_path, "ttf/Roboto-Regular.ttf");
-  fontresload("0", getvar(font_path), "12" ); #-- "0" = Small Font
-  fontresload("1", getvar(font_path), "18" ); #-- "1" = Big Font
+    # We'll use aroma's font
+    setvar(font_path, "ttf/Roboto-Regular.ttf");
+    fontresload("0", getvar(font_path), "12" ); #-- "0" = Small Font
+    fontresload("1", getvar(font_path), "18" ); #-- "1" = Big Font
 endif;
 
 ##
@@ -126,44 +151,45 @@ theme(getvar("aroma_theme"));
 # Check for the installer prop file
 #
 if
-  # Check to see if the file has been renamed (if it has the chef most likely edited it :D)
-  resprop(getvar("aroma_prop"), "rom_name") == ""
+    # Check to see if the file has been renamed (if it has the chef most likely edited it :D)
+    resprop(getvar("aroma_prop"), "rom_name") == ""
 then
-  # The prop file hasn't been renamed.
-  alert(
-    # Arg 1
-      getvar("aroma_prop") + " not found!",
-    # Arg 2
-      "If you are a rom dev, make sure you edit installer.default.prop located in the aroma " +
-      "directory, and rename it to " + getvar("aroma_prop") + " before releasing your ROM.\n" +
-      "If you are not a ROM dev, you shouldn't be flashing this.",
-    # Arg 3
-      "icons/alert",
-    # Arg 4
-      "Exit Installation"
-  );
-  exit();
+    # The prop file hasn't been renamed.
+    alert(
+        # Arg 1
+        getvar("aroma_prop") + " not found!",
+        # Arg 2
+        "If you are a rom dev, make sure you edit installer.default.prop " +
+            "located in the aroma directory, and rename it to " +
+            getvar("aroma_prop") + " before releasing your ROM.\n\n" +
+            "If you are not a ROM dev, you shouldn't be flashing this.",
+        # Arg 3
+        "icons/alert",
+        # Arg 4
+        "Exit Installation"
+    );
+    exit();
 endif;
 
 ##
 # Rom information screen
 #
 viewbox(
-  # Arg 1
+# Arg 1
     "Welcome",
-  # Arg 2
+    # Arg 2
     "<@center>" +
     "<b>" +
-		"<#selectbg_g>" + getvar("rom_name")     + "</#>\n" +
+    "<#selectbg_g>" + getvar("rom_name")     + "</#>\n" +
     "<#selectbg_g>" + getvar("rom_version")  + "</#>\n" +
     "</b>\n" +
-    
+
     "by\n\n" +
-    
+
     "<b>" +
     "<#selectbg_g>" + getvar("rom_author")   + "</#>\n" +
     "\n" +
-    
+
     "<#selectbg_g>" + getvar("rom_date")     + "</#>\n" +
     "<#selectbg_g>" + getvar("rom_device")   + "</#>\n" +
     "</b>\n" +
@@ -172,286 +198,309 @@ viewbox(
     "<b>" +
     "<#selectbg_g>" + getvar("aroma_ported_by") + "</#>\n" +
     "</b></@>\n\n" +
-    
+
     "<@right>Select Next to continue.</@>" +
     "",
-  # Arg 3
+    # Arg 3
     "icons/info"
 );
 
 
 # Try to figure out which device we're using
 if
-  file_getprop("default.prop", "ro.product.device") != ""
+    file_getprop("default.prop", "ro.product.device") != ""
 then
-  setvar("current_device", file_getprop("default.prop", "ro.product.device"));
+    setvar("current_device", file_getprop("default.prop", "ro.product.device"));
 else
-  if
+if
     file_getprop("/system/build.prop", "ro.product.device") != ""
-  then
-    setvar("current_device", file_getprop("/system/build.prop", "ro.product.device"));
-  endif;
+then
+    setvar("current_device",
+           file_getprop("/system/build.prop", "ro.product.device"));
+    endif;
 endif;
 
 # Try to see if this is a device we can install to
 if
-  getvar("current_device") == getvar("device_product")
+    getvar("current_device") == getvar("device_product")
 then
-  setvar("device_recognized", "true");
+    setvar("device_recognized", "true");
 endif;
 
 if
-  getvar("current_device") == getvar("device_model")
+    getvar("current_device") == getvar("device_model")
 then
-  setvar("device_recognized", "true");
+    setvar("device_recognized", "true");
 endif;
 
 if
-  getvar("device_recognized") == "false"
+    getvar("device_recognized") == "false"
 then
-  if
-    confirm(
-      # Arg 1
-      "Unknown Device!",
-      # Arg 2
-      "This ROM is only for the\n" +
-      "<b><#selectbg_g>" + getvar("device_name") +" (" + getvar("device_model") + ").</#></b>\n\n" +
-      
-      "You are using the following device:\n" +
-      "<b><#selectbg_g>" +
-      getvar("current_device") +
-      "</#></b>\n\n" +
-      
-      "<#F00>Continuing with the installation may cause your phone to brick.</#>\n\n" +
-      
-      "Would you like to continue?",
-      # Arg 3
-      "icons/alert",
-      # Arg 4
-      "Yes",
-      # Arg 5
-      "No"
-    ) == "no"
-  then
+    if
+        confirm(
+            # Arg 1
+            "Unknown Device!",
+            # Arg 2
+            "This ROM is only for the\n" +
+                "<b><#selectbg_g>" + getvar("device_name") + " (" +
+                getvar("device_model") +
+                ").</#></b>\n\n" +
+
+            "You are using the following device:\n" +
+                "<b><#selectbg_g>" +
+                getvar("current_device") +
+                "</#></b>\n\n" +
+
+            "<#F00>Continuing with the installation may cause your phone " +
+            "to brick.</#>\n\n" +
+
+            "Would you like to continue?",
+            # Arg 3
+            "icons/alert",
+            # Arg 4
+            "Yes",
+            # Arg 5
+            "No"
+        ) == "no"
+    then
+        exit();
+    endif;
+endif;
+
+if
+    # This is where we check if the user is on a version we don't want.
+    # If this is a Gingerbread ROM, the user has Froyo bootloaders so our ROM
+    # won't work correctly.
+    # Exit status 0 means GB, 1 means other (Froyo)
+    zipexec("tools/kernel-check.sh") != 0
+then
+    alert(
+        # Arg 1
+        "You are not on Gingerbread!",
+        # Arg 2
+        "This ROM will only work if you are running Gingerbread.\n" +
+        "You are currently running Froyo.\n" +
+        "Please find instructions on how to install this rom.\n"+
+        "Thank you.",
+        # Arg 3
+        "icons/alert",
+        # Arg 4
+        "Exit Installation"
+    );
     exit();
-  endif;
 endif;
 
-if
-  # This is where we check if the user is on a version we don't want.
-  # If this is a Gingerbread ROM, the user has Froyo bootloaders so our ROM
-  # won't work correctly.
-  # Exit status 0 means GB, 1 means other (Froyo)
-  zipexec("tools/kernel-check.sh") != 0
-then
-  alert(
-    # Arg 1
-      "You are not on Gingerbread!",
-    # Arg 2
-      "This ROM will only work if you are running Gingerbread.\n" +
-      "You are currently running Froyo.\n" +
-      "Please find instructions on how to install this rom.\n"+
-      "Thank you.",
-    # Arg 3
-      "icons/alert",
-    # Arg 4
-      "Exit Installation"
-  );
-  exit();
-endif;
-    
 agreebox(
-  # Arg 1
+    # Arg 1
     "Terms Of Use",
-  # Arg 2
+    # Arg 2
     "Please read the Terms of Use below.",
-  # Arg 3
+    # Arg 3
     "icons/agreement",
-  # Arg 4
+    # Arg 4
     getvar("file_agreement"),
-  # Arg 5
+    # Arg 5
     "I agree to the Terms of Use.",
-  # Arg 6
+    # Arg 6
     "Please agree to the Terms of Use to continue with the installation."
 );
 
 menubox(
-  # Title
+    # Title
     "Install Type",
-  # Sub Title
+    # Sub Title
     "Choose a quick or customized installation.",
-  # Icon
+    # Icon
     "icons/install",
-  # Will be saved in /tmp/aroma-data/<file>
+    # Will be saved in /tmp/aroma-data/<file>
     "install_type.prop",
-  # Items ( per 3 arguments ): Title, Subtitle/description, Icon
+    # Items ( per 3 arguments ): Title, Subtitle/description, Icon
     # Item 1
-    "Quick",      "Install default recommended packages into your phone.", "icons/install",
+    "Quick",
+        "Install default recommended packages into your phone.",
+        "icons/install",
     # Item 2
-    "Customized", "Choose what you would like installed on your phone.", "icons/apps"
+    "Customized",
+        "Choose what you would like installed on your phone.",
+        "icons/apps"
 );
 setvar("option_install_type", prop("install_type.prop", "selected"));
 
 if
-  # User chose customized installation
-  getvar("option_install_type") == "2"
+    # User chose customized installation
+    getvar("option_install_type") == "2"
 then
-  checkbox(
-    # Title
-      "Select Installation Options",
-    # Sub Title
-      "Please select installation options below:",
-    # Icon
-      "icons/apps",
-    # Will be saved in /tmp/aroma-data/<file>
-      "customized.prop",
-    # Items ( per 3 arguments ): Title, Subtitle/description, Item Type
-    #   Item Type:
-    #   0 = Unchecked by default
-    #   1 = Checked by default
-    #   2 = Item Group Title ( the subtitle won't be used )
-    #
-      # Group 1
-      "Backup Options", "", 2,
+    checkbox(
+        # Title
+        "Select Installation Options",
+        # Sub Title
+        "Please select installation options below:",
+        # Icon
+        "icons/apps",
+        # Will be saved in /tmp/aroma-data/<file>
+        "customized.prop",
+        # Items ( per 3 arguments ): Title, Subtitle/description, Item Type
+        #   Item Type:
+        #   0 = Unchecked by default
+        #   1 = Checked by default
+        #   2 = Item Group Title ( the subtitle won't be used )
+        #
+        # Group 1
+        "Backup Options", "", 2,
         # Item 1.1
         "Backup /data partition",
-          "Makes a backup of your whole /data partition (apps and settings).",1,
-      # Group 2
-      "Modem and Kernel", "", 2,
+            "Makes a backup of your user apps and settings).",
+            1,
+        # Group 2
+        "Modem and Kernel", "", 2,
         # Item 2.1
         "Install Modem",
-          getvar("rom_modem"), 1,
+            getvar("rom_modem"),
+            1,
         # Item 2.2
         "Install Kernel",
-          getvar("rom_kernel"), 1
-  );
-  
-  # Now we set the customized variables.
-  setvar("option_do_data_backup", prop("customized.prop", "item.1.1"));
-  setvar("option_install_modem",  prop("customized.prop", "item.2.1"));
-  setvar("option_install_kernel", prop("customized.prop", "item.2.2"));
+            getvar("rom_kernel"),
+            1
+    );
+
+    # Now we set the customized variables.
+    setvar("option_do_data_backup", prop("customized.prop", "item.1.1"));
+    setvar("option_install_modem",  prop("customized.prop", "item.2.1"));
+    setvar("option_install_kernel", prop("customized.prop", "item.2.2"));
 endif;
 
 if
-  # Check to see if we have enough free space on /sdcard for a data backup
-  (getvar("option_do_data_backup") == "1" &&
-   cmp(getdisksize("/data", "m"), ">",getdiskfree("/sdcard", "m")))
+# Check to see if we have enough free space on /sdcard for a data backup
+(
+    getvar("option_do_data_backup") == "1" &&
+    cmp(getdisksize("/data", "m"), ">",getdiskfree("/sdcard", "m"))
+)
 then
-  if
+    if
     confirm(
-      # Arg 1
-      "Not enough space",
-      # Arg 2
-			"You do not have enough space on your SD card to make a backup\n" +
-			"Space Available: <b><#selectbg_g>"+getdiskfree("/sdcard", "m")+" MB</#></b>\n"+
-			"Space Required : <b><#selectbg_g>"+getdisksize("/data", "m")  +" MB</#></b>\n\n"+
-      
-			"Even if you selected the data backup option in Customized Install, no " +
-			"backup will be made. If you haven't already made a Titanium or " +
-			"nandroid backup your data will be lost!\n" +
-      "Would you like to continue?",
-      # Arg 3
-      "icons/alert",
-      # Arg 4
-      "Yes",
-      # Arg 5
-      "No"
+        # Arg 1
+        "Not enough space",
+        # Arg 2
+        "You do not have enough space on your SD card to make a backup\n" +
+
+        "Space Available: <b><#selectbg_g>" +
+            getdiskfree("/sdcard", "m") +
+            " MB</#></b>\n"+
+        "Space Required : <b><#selectbg_g>" +
+            getdisksize("/data", "m") +
+            " MB</#></b>\n\n"+
+
+        "Even if you selected the data backup option in Customized Install, " +
+        "no backup will be made. If you haven't already made a Titanium or " +
+        "nandroid backup your data will be lost!\n" +
+        "Would you like to continue?",
+        # Arg 3
+        "icons/alert",
+        # Arg 4
+        "Yes",
+        # Arg 5
+        "No"
     ) == "no"
-  then
-    exit();
-  else
-    # Not enough free space to do the backup, so we disable it.
-    setvar("option_do_data_backup", 0);
-  endif;
+    then
+        exit();
+    else
+        # Not enough free space to do the backup, so we disable it.
+        setvar("option_do_data_backup", 0);
+    endif;
 endif;
 
 ##
 # Now we write out all our install options
 #
 writetmpfile(
-  "options.prop",
-  "option_install_type="   + getvar("option_install_type")   + "\n" +
-  "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
-  "option_install_modem="  + getvar("option_install_modem")  + "\n" +
-  "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
-  "partition_system="      + getvar("partition_system")      + "\n" +
-  "partition_data="        + getvar("partition_data")        + "\n" +
-  "partition_cache="       + getvar("partition_cache")       + "\n" +
-  "partition_sdcard="      + getvar("partition_sdcard")      + "\n" +
-  "partition_kernel="      + getvar("partition_kernel")      + "\n" +
-  "partition_modem="       + getvar("partition_modem")       + "\n" +
-  "partition_efs="         + getvar("partition_efs")         + "\n" +
-  "\n"
+    "options.prop",
+    "option_install_type="   + getvar("option_install_type")   + "\n" +
+    "option_do_data_backup=" + getvar("option_do_data_backup") + "\n" +
+    "option_install_modem="  + getvar("option_install_modem")  + "\n" +
+    "option_install_kernel=" + getvar("option_install_kernel") + "\n" +
+    "partition_system="      + getvar("partition_system")      + "\n" +
+    "partition_data="        + getvar("partition_data")        + "\n" +
+    "partition_cache="       + getvar("partition_cache")       + "\n" +
+    "partition_sdcard="      + getvar("partition_sdcard")      + "\n" +
+    "partition_kernel="      + getvar("partition_kernel")      + "\n" +
+    "partition_modem="       + getvar("partition_modem")       + "\n" +
+    "partition_efs="         + getvar("partition_efs")         + "\n" +
+    "\n"
 );
 
 ##
 # Are you sure you want to continue with the selected options?
 #
 if
-  confirm(
-    "Install Options",
-    "You selected the following options:\n\n" +
+    confirm(
+        "Install Options",
+        "You selected the following options:\n\n" +
 
-    # Installation type
-    "<#selectbg_g>" +
-    iif(cmp(getvar("option_install_type"), "==", "1"), "Quick", "Customized") +
-    "</#> Installation\n\n" +
-    
-    "Do /data backup\t" +
-    "<b><#selectbg_g>" +
-    iif(cmp(getvar("option_do_data_backup"), "==", "1"), "<#0f0>Yes</#>", "<#f00>No</#>") +
-    "</#></b>\n" +
-    
-    "Install modem\t" +
-    "<b><#selectbg_g>" +
-    iif(cmp(getvar("option_install_modem"), "==", "1"), "<#0f0>Yes</#>", "<#f00>No</#>") +
-    "</#></b>\n" +
-    
-    "Install kernel\t\t" +
-    "<b><#selectbg_g>" +
-    iif(cmp(getvar("option_install_kernel"), "==", "1"), "<#0f0>Yes</#>", "<#f00>No</#>") +
-    "</#></b>\n" +
-    
-    "\n" +
-    "Begin the installation now?\n",
-    
-    "icons/info",
-    "Yes",
-    "Go back"
-  ) == "no"
+        # Installation type
+        "<#selectbg_g>" +
+            iif(cmp(getvar("option_install_type"), "==", "1"),
+                "Quick", "Customized") +
+            "</#> Installation\n\n" +
+
+        "Do /data backup\t" +
+            "<b><#selectbg_g>" +
+            iif(cmp(getvar("option_do_data_backup"), "==", "1"),
+                "<#0f0>Yes</#>", "<#f00>No</#>") +
+            "</#></b>\n" +
+
+        "Install modem\t" +
+            "<b><#selectbg_g>" +
+            iif(cmp(getvar("option_install_modem"), "==", "1"),
+                "<#0f0>Yes</#>", "<#f00>No</#>") +
+            "</#></b>\n" +
+
+        "Install kernel\t\t" +
+            "<b><#selectbg_g>" +
+            iif(cmp(getvar("option_install_kernel"), "==", "1"),
+                "<#0f0>Yes</#>", "<#f00>No</#>") +
+            "</#></b>\n" +
+
+        "\n" +
+        "Begin the installation now?\n",
+
+        "icons/info",
+        "Yes",
+        "Go back"
+    ) == "no"
 then
-  # We'll go back this number of screens. Conveniently, the install_type variable holds the number
-  # of screens we'd need to go back from this screen. Might need to hardcode this later though.
-  back(getvar("option_install_type"));
+    # We'll go back this number of screens. Conveniently, the install_type
+    # variable holds the number of screens we'd need to go back from this
+    # screen. Might need to hardcode this later though.
+    back(getvar("option_install_type"));
 endif;
 
 install(
-  "Installing",
-  getvar("rom_name") + "\n" +
-  "Please wait until the install completes." +
-  "",
-  "icons/install"
+    "Installing",
+    getvar("rom_name") + "\n" +
+    "Please wait until the install completes." +
+    "",
+    "icons/install"
 );
 
 ini_set("text_next", "Finish");
 
 viewbox(
-  "Installation Completed",
+    "Installation Completed",
     "<b><#selectbg_g>Congratulations!</#></b>\n\n" +
     getvar("rom_name") + " has successfully installed.\n" +
     "Select Finish to exit.",
-  "icons/info"
+    "icons/info"
 );
 
 # Do we want to reboot the phone after install?
 if
-  confirm(
-    "Reboot phone?",
-    "Would you like to reboot your phone now?\n",
-    "icons/info",
-    "Yes",
-    "No"
-  ) == "yes"
+    confirm(
+        "Reboot phone?",
+        "Would you like to reboot your phone now?\n",
+        "icons/info",
+        "Yes",
+        "No"
+    ) == "yes"
 then
-  reboot("onfinish");
+    reboot("onfinish");
 endif;

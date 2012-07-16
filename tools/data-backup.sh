@@ -21,6 +21,7 @@
 #
 #################################
 # BonsaiROM
+# Edited by Fernando Barillas, Team Acid
 #################################
 
 datadir=/data
@@ -31,14 +32,14 @@ backfile=$backup_dir/backup-data.cpio
 excludes='-path /data/dalvik-cache -prune -path /data/lost+found -prune -o'
 
 if $BB test -d $datadir; then
-  $BB test ! -d $backup_dir && $BB mkdir $backup_dir
-  $BB find $datadir $excludes -print | $BB cpio -omu -H newc > $backfile
+    $BB test ! -d $backup_dir && $BB mkdir $backup_dir
+    $BB find $datadir $excludes -print | $BB cpio -omu -H newc > $backfile
 
-  if $BB test $? -ne 0; then
-    echo "Bonsai Install: backup failed"
-    exit 1
-  else
-    echo "Bonsai Install: backup completed"
-  fi
-  exit 0
+    if $BB test $? -ne 0; then
+        echo "Bonsai Install: backup failed"
+        exit 1
+    else
+        echo "Bonsai Install: backup completed"
+    fi
+    exit 0
 fi

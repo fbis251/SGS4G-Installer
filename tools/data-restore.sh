@@ -21,6 +21,7 @@
 #
 #################################
 # BonsaiROM
+# Edited by Fernando Barillas, Team Acid
 #################################
 
 PATH=/tmp:/sbin:$PATH
@@ -29,22 +30,18 @@ backup_dir=/sdcard/aroma-backup
 backfile=$backup_dir/backup-data.cpio
 
 if $BB test -f $backfile; then
-  echo "Bonsai Install: restoring apps"
-  cd / && $BB cat $backfile | $BB cpio -imu
+    echo "Bonsai Install: restoring apps"
+    cd / && $BB cat $backfile | $BB cpio -imu
 
-  if $BB test $? -ne 0; then
-    echo "Bonsai Install: restore failed"
-    exit 1
-  else
-    $BB test -d /data && $BB chmod 755 /data/app
-    echo "Bonsai Install: restore completed"
-  fi
-
-  echo "Deleting dalvik-cache"
-  $BB rm -rf /data/dalvik-cache
-
-  exit 0
+    if $BB test $? -ne 0; then
+        echo "Bonsai Install: restore failed"
+        exit 1
+    else
+        $BB test -d /data && $BB chmod 755 /data/app
+        echo "Bonsai Install: restore completed"
+    fi
+    exit 0
 else
-  echo "Bonsai Install: nothing to restore - run data-backup first!"
-  exit 1
+    echo "Bonsai Install: nothing to restore - run data-backup first!"
+    exit 1
 fi

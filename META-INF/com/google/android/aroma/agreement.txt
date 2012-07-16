@@ -1,5 +1,5 @@
 <@center><b><#selectbg_g>Team Acid Agreement</#></b></@>
-By installing this ROM, you agree that you will not hold anyone other than yourself responsible for any damage you may cause to your device or other property. You also agree to the terms of the Apache License below.
+By installing this software, you agree that you will not hold anyone other than yourself responsible for any damage you may cause to your device or other property. You also agree to the terms of the Apache License below.
 
 ----
 

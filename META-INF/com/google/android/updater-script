@@ -1,9 +1,34 @@
+################################################################################
+#
+# Copyright (C) 2011 Free Software Foundation, Inc.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public License as published
+# by the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+# USA.
+#
+# License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>
+#
+################################################################################
+# Created by Fernando Barillas (Team Acid)
+################################################################################
+
 if
-   file_getprop("/tmp/aroma/options.prop","option_install_type") == "1"
+    file_getprop("/tmp/aroma/options.prop","option_install_type") == "1"
 then
-  ui_print("@Performing a quick install");
+    ui_print("@Performing a quick install");
 else
-  ui_print("@Performing a customized install");
+    ui_print("@Performing a customized install");
 endif;
 
 show_progress(0.0, 0);
@@ -41,17 +66,17 @@ set_progress(0.05);
 #set_progress(0.1);
 
 if
-  file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
+    file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
-  mount("yaffs2", "MTD", "userdata", "/data");
-  # Run the modified bonsai backup script
-  ui_print("@Backing up /data");
-  ui_print(" This may take a few minutes");
-  run_program("/tmp/data-backup.sh");
-  unmount("/data");
-  unmount("/sdcard");
-  ui_print(" Backup complete");
-  set_progress(0.15);
+    mount("yaffs2", "MTD", "userdata", "/data");
+    # Run the modified bonsai backup script
+    ui_print("@Backing up /data");
+    ui_print(" This may take a few minutes");
+    run_program("/tmp/data-backup.sh");
+    unmount("/data");
+    unmount("/sdcard");
+    ui_print(" Backup complete");
+    set_progress(0.15);
 endif;
 
 package_extract_file("modem.bin", "/tmp/modem.bin");
@@ -85,10 +110,9 @@ format("yaffs2", "MTD", "cache", "0");
 
 mount("yaffs2", "MTD", "system", "/system");
 ui_print("@Extracting Files");
-# show progress takes two arguments
-# how much to increment the progress
-# and how many files are gonna get transferred.
-# 700 is a good default for files transferred
+# show progress takes two arguments how much to increment the progress and
+# how many files are gonna get transferred. 700 is a good default for files
+# transferred
 show_progress(0.2, 700);
 ui_print(" Extracting /system");
 package_extract_dir("recovery", "/system");
@@ -103,98 +127,98 @@ ui_print("@Setting up system");
 symlink("Roboto-Bold.ttf", "/system/fonts/DroidSans-Bold.ttf");
 symlink("Roboto-Regular.ttf", "/system/fonts/DroidSans.ttf");
 symlink("busybox", "/system/xbin/[", "/system/xbin/[[",
-        "/system/xbin/adjtimex", "/system/xbin/arp", "/system/xbin/ash",
-        "/system/xbin/awk", "/system/xbin/base64", "/system/xbin/basename",
-        "/system/xbin/bbconfig", "/system/xbin/blkid", "/system/xbin/blockdev",
-        "/system/xbin/brctl", "/system/xbin/bunzip2", "/system/xbin/bzcat",
-        "/system/xbin/bzip2", "/system/xbin/cal", "/system/xbin/cat",
-        "/system/xbin/catv", "/system/xbin/chattr", "/system/xbin/chgrp",
-        "/system/xbin/chmod", "/system/xbin/chown", "/system/xbin/chroot",
-        "/system/xbin/clear", "/system/xbin/cmp", "/system/xbin/comm",
-        "/system/xbin/cp", "/system/xbin/cpio", "/system/xbin/crond",
-        "/system/xbin/crontab", "/system/xbin/cut", "/system/xbin/date",
-        "/system/xbin/dc", "/system/xbin/dd", "/system/xbin/depmod",
-        "/system/xbin/devmem", "/system/xbin/df", "/system/xbin/diff",
-        "/system/xbin/dirname", "/system/xbin/dmesg", "/system/xbin/dnsd",
-        "/system/xbin/dos2unix", "/system/xbin/du", "/system/xbin/echo",
-        "/system/xbin/ed", "/system/xbin/egrep", "/system/xbin/env",
-        "/system/xbin/expand", "/system/xbin/expr", "/system/xbin/false",
-        "/system/xbin/fdisk", "/system/xbin/fgrep", "/system/xbin/find",
-        "/system/xbin/flash_lock", "/system/xbin/flash_unlock",
-        "/system/xbin/flashcp", "/system/xbin/flock", "/system/xbin/fold",
-        "/system/xbin/free", "/system/xbin/freeramdisk", "/system/xbin/fsync",
-        "/system/xbin/ftpget", "/system/xbin/ftpput", "/system/xbin/fuser",
-        "/system/xbin/getopt", "/system/xbin/grep", "/system/xbin/groups",
-        "/system/xbin/gunzip", "/system/xbin/gzip", "/system/xbin/halt",
-        "/system/xbin/head", "/system/xbin/hexdump", "/system/xbin/id",
-        "/system/xbin/ifconfig", "/system/xbin/insmod", "/system/xbin/install",
-        "/system/xbin/iostat", "/system/xbin/ip", "/system/xbin/kill",
-        "/system/xbin/killall", "/system/xbin/killall5", "/system/xbin/length",
-        "/system/xbin/less", "/system/xbin/ln", "/system/xbin/losetup",
-        "/system/xbin/ls", "/system/xbin/lsattr", "/system/xbin/lsmod",
-        "/system/xbin/lsusb", "/system/xbin/lzcat", "/system/xbin/lzma",
-        "/system/xbin/lzop", "/system/xbin/lzopcat", "/system/xbin/man",
-        "/system/xbin/md5sum", "/system/xbin/mesg", "/system/xbin/mkdir",
-        "/system/xbin/mke2fs", "/system/xbin/mkfifo", "/system/xbin/mkfs.ext2",
-        "/system/xbin/mkfs.vfat", "/system/xbin/mknod", "/system/xbin/mkswap",
-        "/system/xbin/mktemp", "/system/xbin/modinfo", "/system/xbin/modprobe",
-        "/system/xbin/more", "/system/xbin/mount", "/system/xbin/mountpoint",
-        "/system/xbin/mpstat", "/system/xbin/mv", "/system/xbin/nanddump",
-        "/system/xbin/nandwrite", "/system/xbin/netstat", "/system/xbin/nice",
-        "/system/xbin/nohup", "/system/xbin/nslookup", "/system/xbin/ntpd",
-        "/system/xbin/od", "/system/xbin/patch", "/system/xbin/pgrep",
-        "/system/xbin/pidof", "/system/xbin/ping", "/system/xbin/pkill",
-        "/system/xbin/pmap", "/system/xbin/poweroff", "/system/xbin/printenv",
-        "/system/xbin/printf", "/system/xbin/ps", "/system/xbin/pstree",
-        "/system/xbin/pwd", "/system/xbin/pwdx", "/system/xbin/rdev",
-        "/system/xbin/readlink", "/system/xbin/realpath", "/system/xbin/renice",
-        "/system/xbin/reset", "/system/xbin/resize", "/system/xbin/rev",
-        "/system/xbin/rm", "/system/xbin/rmdir", "/system/xbin/rmmod",
-        "/system/xbin/route", "/system/xbin/run-parts", "/system/xbin/rx",
-        "/system/xbin/sed", "/system/xbin/seq", "/system/xbin/setconsole",
-        "/system/xbin/setserial", "/system/xbin/setsid", "/system/xbin/sh",
-        "/system/xbin/sha1sum", "/system/xbin/sha256sum",
-        "/system/xbin/sha512sum", "/system/xbin/sleep", "/system/xbin/sort",
-        "/system/xbin/split", "/system/xbin/stat", "/system/xbin/strings",
-        "/system/xbin/stty", "/system/xbin/sum", "/system/xbin/swapoff",
-        "/system/xbin/swapon", "/system/xbin/sync", "/system/xbin/sysctl",
-        "/system/xbin/tac", "/system/xbin/tail", "/system/xbin/tar",
-        "/system/xbin/taskset", "/system/xbin/tee", "/system/xbin/telnet",
-        "/system/xbin/telnetd", "/system/xbin/test", "/system/xbin/tftp",
-        "/system/xbin/tftpd", "/system/xbin/time", "/system/xbin/timeout",
-        "/system/xbin/top", "/system/xbin/touch", "/system/xbin/tr",
-        "/system/xbin/traceroute", "/system/xbin/true", "/system/xbin/ttysize",
-        "/system/xbin/tune2fs", "/system/xbin/umount", "/system/xbin/uname",
-        "/system/xbin/uncompress", "/system/xbin/unexpand", "/system/xbin/uniq",
-        "/system/xbin/unix2dos", "/system/xbin/unlzma", "/system/xbin/unlzop",
-        "/system/xbin/unxz", "/system/xbin/unzip", "/system/xbin/uptime",
-        "/system/xbin/usleep", "/system/xbin/uudecode", "/system/xbin/uuencode",
-        "/system/xbin/vi", "/system/xbin/watch", "/system/xbin/wc",
-        "/system/xbin/wget", "/system/xbin/which", "/system/xbin/whoami",
-        "/system/xbin/xargs", "/system/xbin/xz", "/system/xbin/xzcat",
-        "/system/xbin/yes",
-        "/system/xbin/zcat");
+    "/system/xbin/adjtimex", "/system/xbin/arp", "/system/xbin/ash",
+    "/system/xbin/awk", "/system/xbin/base64", "/system/xbin/basename",
+    "/system/xbin/bbconfig", "/system/xbin/blkid", "/system/xbin/blockdev",
+    "/system/xbin/brctl", "/system/xbin/bunzip2", "/system/xbin/bzcat",
+    "/system/xbin/bzip2", "/system/xbin/cal", "/system/xbin/cat",
+    "/system/xbin/catv", "/system/xbin/chattr", "/system/xbin/chgrp",
+    "/system/xbin/chmod", "/system/xbin/chown", "/system/xbin/chroot",
+    "/system/xbin/clear", "/system/xbin/cmp", "/system/xbin/comm",
+    "/system/xbin/cp", "/system/xbin/cpio", "/system/xbin/crond",
+    "/system/xbin/crontab", "/system/xbin/cut", "/system/xbin/date",
+    "/system/xbin/dc", "/system/xbin/dd", "/system/xbin/depmod",
+    "/system/xbin/devmem", "/system/xbin/df", "/system/xbin/diff",
+    "/system/xbin/dirname", "/system/xbin/dmesg", "/system/xbin/dnsd",
+    "/system/xbin/dos2unix", "/system/xbin/du", "/system/xbin/echo",
+    "/system/xbin/ed", "/system/xbin/egrep", "/system/xbin/env",
+    "/system/xbin/expand", "/system/xbin/expr", "/system/xbin/false",
+    "/system/xbin/fdisk", "/system/xbin/fgrep", "/system/xbin/find",
+    "/system/xbin/flash_lock", "/system/xbin/flash_unlock",
+    "/system/xbin/flashcp", "/system/xbin/flock", "/system/xbin/fold",
+    "/system/xbin/free", "/system/xbin/freeramdisk", "/system/xbin/fsync",
+    "/system/xbin/ftpget", "/system/xbin/ftpput", "/system/xbin/fuser",
+    "/system/xbin/getopt", "/system/xbin/grep", "/system/xbin/groups",
+    "/system/xbin/gunzip", "/system/xbin/gzip", "/system/xbin/halt",
+    "/system/xbin/head", "/system/xbin/hexdump", "/system/xbin/id",
+    "/system/xbin/ifconfig", "/system/xbin/insmod", "/system/xbin/install",
+    "/system/xbin/iostat", "/system/xbin/ip", "/system/xbin/kill",
+    "/system/xbin/killall", "/system/xbin/killall5", "/system/xbin/length",
+    "/system/xbin/less", "/system/xbin/ln", "/system/xbin/losetup",
+    "/system/xbin/ls", "/system/xbin/lsattr", "/system/xbin/lsmod",
+    "/system/xbin/lsusb", "/system/xbin/lzcat", "/system/xbin/lzma",
+    "/system/xbin/lzop", "/system/xbin/lzopcat", "/system/xbin/man",
+    "/system/xbin/md5sum", "/system/xbin/mesg", "/system/xbin/mkdir",
+    "/system/xbin/mke2fs", "/system/xbin/mkfifo", "/system/xbin/mkfs.ext2",
+    "/system/xbin/mkfs.vfat", "/system/xbin/mknod", "/system/xbin/mkswap",
+    "/system/xbin/mktemp", "/system/xbin/modinfo", "/system/xbin/modprobe",
+    "/system/xbin/more", "/system/xbin/mount", "/system/xbin/mountpoint",
+    "/system/xbin/mpstat", "/system/xbin/mv", "/system/xbin/nanddump",
+    "/system/xbin/nandwrite", "/system/xbin/netstat", "/system/xbin/nice",
+    "/system/xbin/nohup", "/system/xbin/nslookup", "/system/xbin/ntpd",
+    "/system/xbin/od", "/system/xbin/patch", "/system/xbin/pgrep",
+    "/system/xbin/pidof", "/system/xbin/ping", "/system/xbin/pkill",
+    "/system/xbin/pmap", "/system/xbin/poweroff", "/system/xbin/printenv",
+    "/system/xbin/printf", "/system/xbin/ps", "/system/xbin/pstree",
+    "/system/xbin/pwd", "/system/xbin/pwdx", "/system/xbin/rdev",
+    "/system/xbin/readlink", "/system/xbin/realpath", "/system/xbin/renice",
+    "/system/xbin/reset", "/system/xbin/resize", "/system/xbin/rev",
+    "/system/xbin/rm", "/system/xbin/rmdir", "/system/xbin/rmmod",
+    "/system/xbin/route", "/system/xbin/run-parts", "/system/xbin/rx",
+    "/system/xbin/sed", "/system/xbin/seq", "/system/xbin/setconsole",
+    "/system/xbin/setserial", "/system/xbin/setsid", "/system/xbin/sh",
+    "/system/xbin/sha1sum", "/system/xbin/sha256sum",
+    "/system/xbin/sha512sum", "/system/xbin/sleep", "/system/xbin/sort",
+    "/system/xbin/split", "/system/xbin/stat", "/system/xbin/strings",
+    "/system/xbin/stty", "/system/xbin/sum", "/system/xbin/swapoff",
+    "/system/xbin/swapon", "/system/xbin/sync", "/system/xbin/sysctl",
+    "/system/xbin/tac", "/system/xbin/tail", "/system/xbin/tar",
+    "/system/xbin/taskset", "/system/xbin/tee", "/system/xbin/telnet",
+    "/system/xbin/telnetd", "/system/xbin/test", "/system/xbin/tftp",
+    "/system/xbin/tftpd", "/system/xbin/time", "/system/xbin/timeout",
+    "/system/xbin/top", "/system/xbin/touch", "/system/xbin/tr",
+    "/system/xbin/traceroute", "/system/xbin/true", "/system/xbin/ttysize",
+    "/system/xbin/tune2fs", "/system/xbin/umount", "/system/xbin/uname",
+    "/system/xbin/uncompress", "/system/xbin/unexpand", "/system/xbin/uniq",
+    "/system/xbin/unix2dos", "/system/xbin/unlzma", "/system/xbin/unlzop",
+    "/system/xbin/unxz", "/system/xbin/unzip", "/system/xbin/uptime",
+    "/system/xbin/usleep", "/system/xbin/uudecode", "/system/xbin/uuencode",
+    "/system/xbin/vi", "/system/xbin/watch", "/system/xbin/wc",
+    "/system/xbin/wget", "/system/xbin/which", "/system/xbin/whoami",
+    "/system/xbin/xargs", "/system/xbin/xz", "/system/xbin/xzcat",
+    "/system/xbin/yes",
+    "/system/xbin/zcat");
 symlink("mksh", "/system/bin/sh");
 symlink("toolbox", "/system/bin/cat", "/system/bin/chmod",
-        "/system/bin/chown", "/system/bin/cmp", "/system/bin/date",
-        "/system/bin/dd", "/system/bin/df", "/system/bin/dmesg",
-        "/system/bin/getevent", "/system/bin/getprop", "/system/bin/hd",
-        "/system/bin/id", "/system/bin/ifconfig", "/system/bin/iftop",
-        "/system/bin/insmod", "/system/bin/ioctl", "/system/bin/ionice",
-        "/system/bin/kill", "/system/bin/ln", "/system/bin/log",
-        "/system/bin/ls", "/system/bin/lsmod", "/system/bin/lsof",
-        "/system/bin/mkdir", "/system/bin/mount", "/system/bin/mv",
-        "/system/bin/nandread", "/system/bin/netstat",
-        "/system/bin/newfs_msdos", "/system/bin/notify", "/system/bin/printenv",
-        "/system/bin/ps", "/system/bin/r", "/system/bin/reboot",
-        "/system/bin/renice", "/system/bin/rm", "/system/bin/rmdir",
-        "/system/bin/rmmod", "/system/bin/route", "/system/bin/schedtop",
-        "/system/bin/sendevent", "/system/bin/setconsole",
-        "/system/bin/setprop", "/system/bin/sleep", "/system/bin/smd",
-        "/system/bin/start", "/system/bin/stop", "/system/bin/sync",
-        "/system/bin/top", "/system/bin/touch", "/system/bin/umount",
-        "/system/bin/uptime", "/system/bin/vmstat", "/system/bin/watchprops",
-        "/system/bin/wipe");
+    "/system/bin/chown", "/system/bin/cmp", "/system/bin/date",
+    "/system/bin/dd", "/system/bin/df", "/system/bin/dmesg",
+    "/system/bin/getevent", "/system/bin/getprop", "/system/bin/hd",
+    "/system/bin/id", "/system/bin/ifconfig", "/system/bin/iftop",
+    "/system/bin/insmod", "/system/bin/ioctl", "/system/bin/ionice",
+    "/system/bin/kill", "/system/bin/ln", "/system/bin/log",
+    "/system/bin/ls", "/system/bin/lsmod", "/system/bin/lsof",
+    "/system/bin/mkdir", "/system/bin/mount", "/system/bin/mv",
+    "/system/bin/nandread", "/system/bin/netstat",
+    "/system/bin/newfs_msdos", "/system/bin/notify", "/system/bin/printenv",
+    "/system/bin/ps", "/system/bin/r", "/system/bin/reboot",
+    "/system/bin/renice", "/system/bin/rm", "/system/bin/rmdir",
+    "/system/bin/rmmod", "/system/bin/route", "/system/bin/schedtop",
+    "/system/bin/sendevent", "/system/bin/setconsole",
+    "/system/bin/setprop", "/system/bin/sleep", "/system/bin/smd",
+    "/system/bin/start", "/system/bin/stop", "/system/bin/sync",
+    "/system/bin/top", "/system/bin/touch", "/system/bin/umount",
+    "/system/bin/uptime", "/system/bin/vmstat", "/system/bin/watchprops",
+    "/system/bin/wipe");
 set_progress(0.55);
 
 ui_print("@Setting permissions");
@@ -229,29 +253,30 @@ set_perm(0, 0, 06755, "/system/xbin/su");
 set_perm_recursive(0, 0, 0755, 0555, "/system/etc/init.d");
 
 if
-  file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
+    file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
-  mount("yaffs2", "MTD", "userdata", "/data");
-  ui_print("@Restoring applications and data");
-  ui_print(" This may take a while");
-  run_program("/tmp/data-restore.sh");
-  ui_print(" Restore completed");
+    mount("yaffs2", "MTD", "userdata", "/data");
+    ui_print("@Restoring applications and data");
+    ui_print(" This may take a while");
+    run_program("/tmp/data-restore.sh");
+    ui_print(" Restore completed");
 endif;
 set_progress(0.7);
 
 if
-  file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
+    file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
 then
-  ui_print("@Flashing modem");
-  run_program("/tmp/flash-modem.sh", file_getprop("/tmp/aroma/options.prop", "partition_modem"));
+    ui_print("@Flashing modem");
+    run_program("/tmp/flash-modem.sh",
+        file_getprop("/tmp/aroma/options.prop", "partition_modem"));
 endif;
 set_progress(0.8);
 
 if
-  file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
+    file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
 then
-  ui_print("@Flashing boot.img");
-  run_program("/tmp/flash_image", "boot", "/tmp/boot.img");
+    ui_print("@Flashing boot.img");
+    run_program("/tmp/flash_image", "boot", "/tmp/boot.img");
 endif;
 set_progress(0.9);
 
