@@ -82,7 +82,7 @@ clean:
 push-rom-zip: rom-zip
 	adb push $(LOCAL_ROM_ZIP) $(REMOTE_ZIP)
 
-push-zip: zip $(LOCAL_FILE)
+push-zip: zip $(LOCAL_ZIP)
 	adb push $(LOCAL_ZIP) $(REMOTE_ZIP)
 
 reboot:

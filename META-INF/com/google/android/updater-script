@@ -99,13 +99,14 @@ ui_print("@Formatting /data");
 format("yaffs2", "MTD", "userdata", "0");
 ui_print("@Formatting /cache");
 format("yaffs2", "MTD", "cache", "0");
+set_progress(0.3);
 
 mount("yaffs2", "MTD", "system", "/system");
 ui_print("@Extracting Files");
 # show progress takes two arguments how much to increment the progress and
 # how many files are gonna get transferred. 700 is a good default for files
 # transferred
-show_progress(0.2, 700);
+show_progress(0.4, 700);
 ui_print(" Extracting /system");
 package_extract_dir("recovery", "/system");
 package_extract_dir("system", "/system");
@@ -113,7 +114,7 @@ ui_print(" Extracting /data");
 package_extract_dir("data", "/data");
 ui_print(" Extracting /sdcard");
 package_extract_dir("sdcard", "/sdcard");
-set_progress(0.5);
+set_progress(0.7);
 
 ui_print("@Setting up system");
 symlink("Roboto-Bold.ttf", "/system/fonts/DroidSans-Bold.ttf");
@@ -211,7 +212,7 @@ symlink("toolbox", "/system/bin/cat", "/system/bin/chmod",
         "/system/bin/top", "/system/bin/touch", "/system/bin/umount",
         "/system/bin/uptime", "/system/bin/vmstat", "/system/bin/watchprops",
         "/system/bin/wipe");
-set_progress(0.55);
+set_progress(0.75);
 
 ui_print("@Setting permissions");
 set_perm_recursive(0, 0, 0755, 0644, "/system");
@@ -243,6 +244,7 @@ set_perm(0, 0, 06755, "/system/xbin/procmem");
 set_perm(0, 0, 06755, "/system/xbin/procrank");
 set_perm(0, 0, 06755, "/system/xbin/su");
 set_perm_recursive(0, 0, 0755, 0555, "/system/etc/init.d");
+set_progress(0.8);
 
 if
     file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
@@ -253,7 +255,7 @@ then
     run_program("/tmp/data-restore.sh");
     ui_print(" Restore completed");
 endif;
-set_progress(0.7);
+set_progress(0.85);
 
 if
     file_getprop("/tmp/aroma/options.prop","option_install_modem") == "1"
@@ -262,7 +264,7 @@ then
     run_program("/tmp/flash-modem.sh",
         file_getprop("/tmp/aroma/options.prop", "partition_modem"));
 endif;
-set_progress(0.8);
+set_progress(0.9);
 
 if
     file_getprop("/tmp/aroma/options.prop","option_install_kernel") == "1"
@@ -270,7 +272,7 @@ then
     ui_print("@Flashing boot.img");
     run_program("/tmp/flash_image", "boot", "/tmp/boot.img");
 endif;
-set_progress(0.9);
+set_progress(0.95);
 
 ui_print("@Unmounting partitions");
 run_program("/sbin/umount", "-l", "/system");
