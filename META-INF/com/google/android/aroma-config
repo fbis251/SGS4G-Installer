@@ -98,7 +98,33 @@ ini_set("rom_device",  getvar("rom_device"));
 # ( green ), replace this calibrate() function with that data.
 #
 # These are the defaults for the SGS4G
-calibrate("0.88558", "42", "0.9346", "22", "yes");
+# New calibration method with AROMA 2.50
+#
+calibrate_matrix("45855.00", "-810.00", "15352.50", "-935.00",
+                 "44880.00", "70647.50", "44819.50", "0");
+
+##
+# Check if we're doing a flash from BML
+#
+
+# We need to extract the files first
+ziptotmp("boot.img", "boot.img");
+ziptotmp("tools/busybox", "busybox");
+ziptotmp("tools/bml-flash.sh", "bml-flash.sh");
+ziptotmp("tools/flash_image", "flash_image");
+
+# Move required files to /tmp/
+#exec("/tmp/aroma/busybox", "mv", "/tmp/aroma/busybox", "/tmp/busybox");
+#exec("/tmp/busybox", "mv", "/tmp/aroma/boot.img", "/tmp/boot.img");
+#exec("/tmp/busybox", "mv", "/tmp/aroma/bml-flash.sh", "/tmp/bml-flash.sh");
+#exec("/tmp/busybox", "mv", "/tmp/aroma/flash_image", "/tmp/flash_image");
+
+# Set execute permissions
+exec("/tmp/aroma/busybox", "chmod", "777", "/tmp/bml-flash.sh");
+exec("/tmp/aroma/busybox", "chmod", "777", "/tmp/flash_image");
+
+# Now we can execute the BML flash script
+exec("/tmp/aroma/bml-flash.sh");
 
 ##
 # Splash screen
@@ -108,7 +134,8 @@ splash(2500, "splash");
 ##
 # Tasks to run before the installer starts
 #
-# Mount all the mount points. We can manipulate the filesystem before the install.
+# Mount all the mount points.
+# We can manipulate the filesystem before the install.
 #
 exec("/sbin/mount", getvar("partition_system"), "/system");
 exec("/sbin/mount", getvar("partition_data"),   "/data");
@@ -126,7 +153,8 @@ setvar("option_install_kernel", 1);
 # Set fonts
 #
 if
-    # Make sure that the zip file build.prop exists, which probably means that the font exists
+    # Make sure that the zip file build.prop exists, which probably means that
+    # the font exists
     zipprop("system/build.prop", "ro.product.device") != ""
 then
     # We're loading the font from the ROM directory
@@ -151,7 +179,8 @@ theme(getvar("aroma_theme"));
 # Check for the installer prop file
 #
 if
-    # Check to see if the file has been renamed (if it has the chef most likely edited it :D)
+    # Check to see if the prop file has been renamed.
+    # (if it has the chef most likely edited it :D)
     resprop(getvar("aroma_prop"), "rom_name") == ""
 then
     # The prop file hasn't been renamed.
