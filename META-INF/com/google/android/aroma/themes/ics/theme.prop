@@ -43,6 +43,9 @@ color.selectfg        = #fff
 color.titlebg         = #000
 color.titlebg_g       = #000
 color.titlefg         = #fff
+color.dlgtitlebg      = #fff
+color.dlgtitlebg_g    = #000
+color.dlgtitlefg      = #fff
 color.scrollbar       = #ccc
 color.navbg           = #000
 color.navbg_g         = #000
@@ -54,6 +57,9 @@ config.roundsize             = 1
 config.button_roundsize      = 1
 config.window_roundsize      = 1
 config.transition_frame      = 5
+
+font.small                   = font.roboto.small
+font.big                     = font.roboto.big
 
 
 info.themename        = ICS

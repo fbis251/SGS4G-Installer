@@ -33,18 +33,18 @@
 #	Creates the zip and pushes the zip and the update-binary to the device
 # clean
 #	Cleans the temporary files
-# make-zip
-#	Creates the standard testing zip
 # push-rom-zip
 #	Updates and pushes installer.rom.zip with the latest AROMA files
 # push-zip
 #	Updates the standard testing zip and pushes it to the device
 # reboot
 #	Reboots the device to recovery using adb
+# rom-zip
+#	Updates installer.rom.zip with the latest AROMA files
 # run
 #	Pushes update-binary to the device and starts the zip install
-# update-rom-zip
-#	Updates installer.rom.zip with the latest AROMA files
+# zip
+#	Creates the standard testing zip
 
 ################################################################################
 # Only edit the lines below if you know what you're doing
@@ -79,21 +79,21 @@ clean:
 	find . \( -name "*~" -o -name "*.swp" \) -delete
 	rm -f $(LOCAL_ZIP)
 
-make-zip: clean $(ZIP_DEPENDENCIES)
-	$(ZIP_COMMAND) $(LOCAL_ZIP) $(ZIP_DEPENDENCIES) busybox
-
-push-rom-zip: update-rom-zip
+push-rom-zip: rom-zip
 	adb push $(LOCAL_ROM_ZIP) $(REMOTE_ZIP)
 
-push-zip: make-zip $(LOCAL_FILE)
+push-zip: zip $(LOCAL_FILE)
 	adb push $(LOCAL_ZIP) $(REMOTE_ZIP)
 
 reboot:
 	adb wait-for-device
 	adb shell reboot recovery
 
+rom-zip: clean $(LOCAL_ROM_ZIP) $(ZIP_DEPENDENCIES)
+	$(ZIP_COMMAND) $(LOCAL_ROM_ZIP) $(ZIP_DEPENDENCIES)
+
 run: aroma
 	adb shell "$(REMOTE_AROMA_BINARY) 1 0 $(REMOTE_ZIP)"
 
-update-rom-zip: $(LOCAL_ROM_ZIP) $(ZIP_DEPENDENCIES)
-	$(ZIP_COMMAND) $(LOCAL_ROM_ZIP) $(ZIP_DEPENDENCIES)
+zip: clean $(ZIP_DEPENDENCIES)
+	$(ZIP_COMMAND) $(LOCAL_ZIP) $(ZIP_DEPENDENCIES)

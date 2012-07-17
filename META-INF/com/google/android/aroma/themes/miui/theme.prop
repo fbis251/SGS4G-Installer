@@ -43,6 +43,9 @@ color.selectfg        = #ffffff
 color.titlebg         = #3b3b3b
 color.titlebg_g       = #1a1a1a
 color.titlefg         = #ffffff
+color.dlgtitlebg      = #3b3b3b
+color.dlgtitlebg_g    = #1a1a1a
+color.dlgtitlefg      = #ffffff
 color.scrollbar       = #f0b000
 color.navbg           = #e6e6e6
 color.navbg_g         = #c5c5c5
@@ -55,6 +58,9 @@ config.roundsize             = 2
 config.button_roundsize      = 2
 config.window_roundsize      = 2
 config.transition_frame      = 6
+
+font.small            = font.roboto.small
+font.big              = font.roboto.big
 
 
 info.themename        = MIUI
