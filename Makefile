@@ -42,7 +42,7 @@
 # reboot
 #	Reboots the device to recovery using adb
 # run
-#	Pushes the zip and update-binary to the device and starts the zip install
+#	Pushes update-binary to the device and starts the zip install
 # update-rom-zip
 #	Updates installer.rom.zip with the latest AROMA files
 
@@ -71,12 +71,11 @@ ZIP_COMMAND = zip --quiet -r -$(ZIP_COMPRESSION)
 
 default: push-rom-zip
 
-aroma: push-zip $(AROMA_BINARY)
+aroma: $(AROMA_BINARY)
 	adb push $(AROMA_BINARY) $(REMOTE_AROMA_BINARY)
 	adb shell "chmod a+x /tmp/*"
 
 clean:
-	echo "Deleting all vim backup files"
 	find . \( -name "*~" -o -name "*.swp" \) -delete
 	rm -f $(LOCAL_ZIP)
 
@@ -88,7 +87,6 @@ push-rom-zip: update-rom-zip
 
 push-zip: make-zip $(LOCAL_FILE)
 	adb push $(LOCAL_ZIP) $(REMOTE_ZIP)
-	echo "Installer transferred successfully!"
 
 reboot:
 	adb wait-for-device
