@@ -102,6 +102,7 @@ format("yaffs2", "MTD", "cache", "0");
 set_progress(0.3);
 
 mount("yaffs2", "MTD", "system", "/system");
+mount("yaffs2", "MTD", "userdata", "/data");
 ui_print("@Extracting Files");
 # show progress takes two arguments how much to increment the progress and
 # how many files are gonna get transferred. 700 is a good default for files
@@ -249,7 +250,6 @@ set_progress(0.8);
 if
     file_getprop("/tmp/aroma/options.prop","option_do_data_backup") == "1"
 then
-    mount("yaffs2", "MTD", "userdata", "/data");
     ui_print("@Restoring applications and data");
     ui_print(" This may take a while");
     run_program("/tmp/data-restore.sh");
